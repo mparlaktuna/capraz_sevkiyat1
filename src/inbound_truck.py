@@ -9,7 +9,7 @@ class InboundTruck(Truck):
     """
     def __init__(self):
         Truck.__init__(self)
-        self.behaviour_list = ('coming', 'waiting_to_deploy', 'changeover', 'deploying', 'changeover2', 'done')
+        self.behaviour_list = ['coming', 'waiting_to_deploy', 'changeover', 'deploying', 'changeover2', 'done']
         self.function_list = [self.coming, self.waiting, self.changeover, self.deploying, self.changeover2, self.done]
 
         self.good = GoodStore()

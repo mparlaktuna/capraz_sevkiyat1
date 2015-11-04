@@ -9,7 +9,6 @@ class ReceivingDoor(Door):
         self.behaviour_list = ['empty', 'waiting', 'loading', 'waiting2']
         self.function_list = [self.empty, self.waiting, self.loading, self.waiting]
         self.good_times = []
-
         self.door_name = name
         self.waiting_name = 'waiting_to_deploy'
 

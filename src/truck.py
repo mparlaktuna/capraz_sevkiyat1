@@ -13,7 +13,7 @@ class Truck(QObject):
         self.times = {'arrival_time': 0}
         self.current_state = 0
         self.state_signal = False
-        self.behaviour_list = {}
+        self.behaviour_list = []
         self.relevant_data = None
         self.changeover_time = 0
         self.next_state_time = 0
@@ -32,6 +32,11 @@ class Truck(QObject):
             self.times['arrived'] = self.current_time
             self.next_state()
 
-    def next_state(self):
+    def next_state(self, name=None):
         self.state_signal = True
-        self.current_state += 1
+        if name:
+            print('name')
+            print(self.behaviour_list.index('loading'))
+            self.current_state = self.behaviour_list.index(name)
+        else:
+            self.current_state += 1

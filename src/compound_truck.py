@@ -9,12 +9,16 @@ class CompoundTruck(Truck):
     """
     def __init__(self):
         Truck.__init__(self)
-        self.behaviour_list = ('coming', 'waiting_to_deploy', 'changeover', 'deploying', 'changeover2', 'truck_transfer', 'waiting_to_load')
+        self.behaviour_list = ['coming', 'waiting_to_deploy', 'changeover', 'deploying', 'changeover2',
+                               'truck_transfer', 'waiting_to_load', 'changeover3', 'not_ready_to_load',
+                               'ready_to_load', 'must_load', 'loading', 'changeover4', 'done']
         self.current_state = 0
-        self.function_list = [self.coming, self.waiting, self.changeover, self.deploying, self.changeover2, self.truck_transfer, self.waiting_to_load]
+        self.function_list = [self.coming, self.waiting, self.changeover, self.deploying, self.changeover2,
+                              self.truck_transfer, self.waiting_to_load, self.changeover3, self.not_ready_to_load,
+                              self.ready_to_load, self.must_load, self.loading, self.changeover4, self.done]
         self.current_time = 0
         self.good = GoodStore()
-        needed_goods = []
+        self.needed_goods = {}
         self.transfer_time = 0
         self.lower_Bound = 0
         self.upper_bound = 0
@@ -43,9 +47,11 @@ class CompoundTruck(Truck):
             self.current_door.next_state()
             self.next_state()
             self.next_state_time = self.transfer_time + self.current_time
+            self.good = GoodStore()
 
     def truck_transfer(self):
-        pass
+        if self.current_time == self.next_state_time:
+            self.next_state()
 
     def waiting_to_load(self):
         pass
@@ -53,11 +59,41 @@ class CompoundTruck(Truck):
     def changeover3(self):
         if self.current_time == self.next_state_time:
             self.next_state()
+            self.next_state_time = self.transfer_time + self.current_time
+
+    def not_ready_to_load(self):
+        self.good_amount = sum(self.needed_goods.values())
+        self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
+        if self.lower_Bound < self.next_state_time:
+            print('lower')
+            self.next_state()
+            self.current_door.next_state()
+        elif self.next_state_time > self.upper_bound:
+            print('upper')
+            self.current_door.next_state()
+            self.next_state()
+            self.next_state()
+
+    def ready_to_load(self):
+        pass#print('ready_to_load')
+
+    def must_load(self):
+        pass
+
+    def loading(self):
+        if self.current_time == self.next_state_time:
+            for goods in self.current_door.goods.good_list.values():
+                for good in goods:
+                    self.good.add_good(good.good_name, good.amount, good.coming_truck_name)
+            self.current_door.goods.clear_goods()
+            self.current_door.next_state()
+            self.next_state_time = self.current_time + self.changeover_time
+            self.next_state()
 
     def changeover4(self):
         if self.current_time == self.next_state_time:
             self.next_state()
-
+            self.current_door.current_state = 0
 
     def done(self):
         pass

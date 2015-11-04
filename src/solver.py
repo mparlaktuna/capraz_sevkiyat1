@@ -24,6 +24,7 @@ class Solver(QThread):
         self.station = Station()
         self.door_list = {}
         self.setup_solver()
+        self.not_finished = True
 
         self.current_time = 0
         self.time_constant = 0.1
@@ -49,7 +50,8 @@ class Solver(QThread):
             truck.truck_name = name
             truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
             truck.changeover_time = self.data.changeover_time
-            truck.needed_goods = self.data.outbound_goods[i]
+            for i, good_amount in enumerate(self.data.outbound_goods[i]):
+                truck.needed_goods[str(i+1)] = good_amount
             truck.lower_Bound = self.data.lower_boundaries[i][name]
             truck.upper_bound = self.data.upper_boundaries[i][name]
             self.truck_list[name] = truck
@@ -65,7 +67,8 @@ class Solver(QThread):
             truck.upper_bound = self.data.upper_boundaries[i][name]
             for k, good_amount in enumerate(self.data.compound_coming_goods[i]):
                 truck.good.add_good(str(k + 1), good_amount, truck.truck_name)
-            truck.needed_goods = self.data.compound_going_goods[i]
+            for i, good_amount in enumerate(self.data.compound_going_goods[i]):
+                truck.needed_goods[str(i+1)] = good_amount
             self.truck_list[name] = truck
 
 
@@ -99,11 +102,12 @@ class Solver(QThread):
         self.start()
 
     def run(self):
-        while self.current_time < 200:
+        while self.not_finished:
             if not self.pause:
                 time.sleep(self.time_constant)
                 self.step()
-        self.done_signal.emit(self.current_time)
+                self.check_finish()
+
 
     def step(self):
         self.current_time += 1
@@ -124,3 +128,12 @@ class Solver(QThread):
                 self.time_constant = float(value)
         except:
             self.time_constant = 0.1
+
+    def check_finish(self):
+        finished = True
+        for truck in self.truck_list.values():
+            finished = finished and (truck.behaviour_list[truck.current_state] == 'done')
+        if finished:
+            self.not_finished = False
+            print('finished')
+            self.done_signal.emit(self.current_time)

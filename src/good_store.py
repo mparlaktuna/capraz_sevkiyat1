@@ -15,9 +15,9 @@ class GoodStore(object):
         return self.loading_time * self.total_good_amount()
 
     def good_amounts(self):
-        amounts = []
-        for i in range(len(self.good_list.values())):
-            amounts.append(sum(goods.amount for goods in self.good_list[str(i + 1)]))
+        amounts = {}
+        for i in self.good_list.keys():
+            amounts[i] = sum(goods.amount for goods in self.good_list[i])
         return amounts
 
     def total_good_amount(self):
@@ -26,6 +26,19 @@ class GoodStore(object):
             for good in goods:
                 good_amount += good.amount
         return good_amount
+
+    def remove_good(self, good_name, needed_amount):
+        removed_goods = []
+        if good_name in self.good_list:
+            for goods in self.good_list[good_name]:
+                if goods.amount >= needed_amount:
+                    goods.amount -= needed_amount
+                    removed_goods.append([needed_amount, goods.coming_truck_name])
+                elif goods.amount < needed_amount:
+                    removed_goods.append([goods.amount, goods.coming_truck_name])
+                    needed_amount -= goods.amount
+                    goods.amount = 0
+        return removed_goods
 
     def add_good(self, name, amount, truck=None):
         if name in self.good_list.keys():

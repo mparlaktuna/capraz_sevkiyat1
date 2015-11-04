@@ -111,6 +111,23 @@ class Simulator(QGraphicsView):
                 truck.setDefaultTextColor(Qt.red)
             elif self.truck_states[name][0] == 'truck_transfer':
                 truck.setPos(-100 + i * 70, -220)
+            if self.truck_states[name][0] == 'waiting_to_load':
+                truck.setPos(320, -180 + (self.data.number_of_outbound_trucks + i)*step)
+            elif self.truck_states[name][0] == 'changeover3':
+                truck.setDefaultTextColor(Qt.red)
+                truck.setPos(*self.door_positions[self.truck_states[name][1]])
+            elif self.truck_states[name][0] == 'not_ready_to_load':
+                truck.setDefaultTextColor(Qt.blue)
+            elif self.truck_states[name][0] == 'ready_to_load':
+                truck.setDefaultTextColor(Qt.yellow)
+            elif self.truck_states[name][0] == 'must_load':
+                truck.setDefaultTextColor(Qt.gray)
+            elif self.truck_states[name][0] == 'loading':
+                truck.setDefaultTextColor(Qt.green)
+            elif self.truck_states[name][0] == 'changeover4':
+                truck.setDefaultTextColor(Qt.red)
+            elif self.truck_states[name][0] == 'done':
+                truck.setPos(350 - (self.data.number_of_outbound_trucks + i)*80, 220)
 
         for i in range(self.data.number_of_outbound_trucks):
             name = 'outbound' + str(i)
@@ -118,17 +135,20 @@ class Simulator(QGraphicsView):
             if self.truck_states[name][0] == 'waiting_to_load':
                 truck.setPos(320, -180 + i*step)
             elif self.truck_states[name][0] == 'changeover':
+                truck.setDefaultTextColor(Qt.red)
                 truck.setPos(*self.door_positions[self.truck_states[name][1]])
             elif self.truck_states[name][0] == 'not_ready_to_load':
                 truck.setDefaultTextColor(Qt.blue)
             elif self.truck_states[name][0] == 'ready_to_load':
                 truck.setDefaultTextColor(Qt.yellow)
             elif self.truck_states[name][0] == 'must_load':
-                truck.setDefaultTextColor(Qt.red)
+                truck.setDefaultTextColor(Qt.gray)
             elif self.truck_states[name][0] == 'loading':
                 truck.setDefaultTextColor(Qt.green)
+            elif self.truck_states[name][0] == 'changeover2':
+                truck.setDefaultTextColor(Qt.red)
             elif self.truck_states[name][0] == 'done':
-                truck.setDefaultTextColor(Qt.black)
+                truck.setPos(350 - i*80, 220)
 
     def mouseDoubleClickEvent(self, event):
         self.parent.pause()
@@ -142,8 +162,11 @@ class Simulator(QGraphicsView):
         if name in self.truck_positions.keys():
             dialog.setText(self.parent.solver.truck_list[name].good.goods_in_text())
         elif name in self.doors.keys():
-            for good in self.parent.solver.door_list[name].goods_list:
-                dialog.append(good.goods_in_text())
+            if name[0] == 'r':
+                for good in self.parent.solver.door_list[name].goods_list:
+                    dialog.append(good.goods_in_text())
+            else:
+                dialog.append(self.parent.solver.door_list[name].goods.goods_in_text())
         else:
                 dialog.append( self.parent.solver.station.goods_list.goods_in_text())
         self.dialog.append(dialog)

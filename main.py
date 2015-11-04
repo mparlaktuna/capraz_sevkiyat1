@@ -285,7 +285,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solver.time_signal.connect(self.time.display)
         self.solver.value_signal.connect(self.solver_truck_signal)
         self.time_constant.textChanged.connect(self.solver.time_step_change)
-
+        self.solver.done_signal.connect(self.finished)
         sequence = Sequence()
         for box in self.combobox_coming_sequence:
             sequence.coming_sequence.append(box.currentText())
@@ -311,6 +311,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.solver.pause = False
         except:
             pass
+
+    def finished(self, time):
+        print('quit')
+        self.solver.quit()
+
 
     def step_solve(self):
         time.sleep(0.5)
