@@ -18,6 +18,20 @@ class ReceivingDoor(Door):
         self.check_good_transfer()
         self.function_list[self.current_state]()
 
+    def empty(self):
+        try:
+            truck = self.truck_list[self.next_truck_number]
+            if truck.behaviour_list[truck.current_state] == self.waiting_name:
+                self.next_state()
+                self.next_truck_number += 1
+                truck.next_state()
+                truck.times['waiting_finish'] = self.current_time
+                truck.relevant_data = self.door_name
+                truck.next_state_time = self.current_time + truck.changeover_time
+                truck.current_door = self
+        except:
+            pass
+
     def waiting(self):
         pass
 
@@ -26,6 +40,9 @@ class ReceivingDoor(Door):
 
     def check_good_transfer(self):
         if self.current_time in self.good_times:
-            good = self.goods_list[self.good_times.index(self.current_time)]
-            self.station.goods_list.append(copy.deepcopy(good))
-            good.clear_goods()
+            good_store = self.goods_list[self.good_times.index(self.current_time)]
+            #print(goods.goods_list)
+            for goods in good_store.good_list.values():
+                for good in goods:
+                    self.station.goods_list.add_good(good.good_name, good.amount, good.coming_truck_name)
+            good_store.clear_goods()

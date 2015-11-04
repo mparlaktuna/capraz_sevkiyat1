@@ -50,6 +50,8 @@ class Solver(QThread):
             truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
             truck.changeover_time = self.data.changeover_time
             truck.needed_goods = self.data.outbound_goods[i]
+            truck.lower_Bound = self.data.lower_boundaries[i][name]
+            truck.upper_bound = self.data.upper_boundaries[i][name]
             self.truck_list[name] = truck
 
         for i in range(self.data.number_of_compound_trucks):
@@ -59,6 +61,8 @@ class Solver(QThread):
             truck.transfer_time = self.data.truck_transfer_time
             truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
             truck.changeover_time = self.data.changeover_time
+            truck.lower_Bound = self.data.lower_boundaries[i][name]
+            truck.upper_bound = self.data.upper_boundaries[i][name]
             for k, good_amount in enumerate(self.data.compound_coming_goods[i]):
                 truck.good.add_good(str(k + 1), good_amount, truck.truck_name)
             truck.needed_goods = self.data.compound_going_goods[i]
@@ -112,4 +116,11 @@ class Solver(QThread):
         for door in self.door_list.values():
             door.run(self.current_time)
 
-
+    def time_step_change(self, value):
+        try:
+            if value == 0:
+                self.time_constant = 0.1
+            else:
+                self.time_constant = float(value)
+        except:
+            self.time_constant = 0.1

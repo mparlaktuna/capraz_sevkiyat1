@@ -20,26 +20,26 @@
     <favorites_list name="capraz_sevkiyat1" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.41021127">
+    <splitter split-orientation="horizontal" split-proportion="0.48823866">
       <split-first>
         <leaf>
-          <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/main.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.43458647">
-                  <caret line="285" column="0" selection-start-line="285" selection-start-column="0" selection-end-line="285" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="287" column="0" selection-start-line="287" selection-start-column="0" selection-end-line="287" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#10#0" expanded="true" />
                     <element signature="e#2298#4542#0" expanded="false" />
                     <element signature="e#4587#5046#0" expanded="false" />
                     <element signature="e#5127#5239#0" expanded="false" />
-                    <element signature="e#7429#7602#0" expanded="false" />
-                    <element signature="e#7660#7835#0" expanded="false" />
-                    <element signature="e#7893#8135#0" expanded="false" />
-                    <element signature="e#8512#9742#0" expanded="false" />
-                    <element signature="e#10132#10588#0" expanded="false" />
-                    <element signature="e#11056#11314#0" expanded="false" />
-                    <element signature="e#11361#12420#0" expanded="false" />
+                    <element signature="e#7430#7603#0" expanded="false" />
+                    <element signature="e#7661#7836#0" expanded="false" />
+                    <element signature="e#7894#8136#0" expanded="false" />
+                    <element signature="e#8513#9743#0" expanded="false" />
+                    <element signature="e#10133#10589#0" expanded="false" />
+                    <element signature="e#11057#11315#0" expanded="false" />
+                    <element signature="e#11362#12421#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -49,7 +49,7 @@
             <entry file="file://$PROJECT_DIR$/src/simulator.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="134" column="12" selection-start-line="134" selection-start-column="12" selection-end-line="134" selection-end-column="12" />
+                  <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#29#0" expanded="true" />
                   </folding>
@@ -61,7 +61,7 @@
             <entry file="file://$PROJECT_DIR$/src/solver.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+                  <caret line="64" column="66" selection-start-line="64" selection-start-column="66" selection-end-line="64" selection-end-column="66" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
@@ -79,12 +79,14 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="good_store.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/good_store.py">
+          <file leaf-file-name="shipping_door.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/shipping_door.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0">
-                  <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-                  <folding />
+                <state vertical-scroll-proportion="0.8210526">
+                  <caret line="45" column="37" selection-start-line="45" selection-start-column="37" selection-end-line="45" selection-end-column="37" />
+                  <folding>
+                    <element signature="e#0#25#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -93,10 +95,20 @@
             <entry file="file://$PROJECT_DIR$/src/receiving_door.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="30" column="30" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+                  <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#11#0" expanded="true" />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="good_store.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/good_store.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -105,11 +117,23 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="door.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/door.py">
+          <file leaf-file-name="outbound_truck.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/outbound_truck.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+                  <caret line="43" column="12" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
+                  <folding>
+                    <element signature="e#0#27#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="door.py" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/door.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.20451128">
+                  <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
                   <folding />
                 </state>
               </provider>
@@ -127,23 +151,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="outbound_truck.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/outbound_truck.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0">
-                  <caret line="16" column="24" selection-start-line="16" selection-start-column="24" selection-end-line="16" selection-end-column="24" />
-                  <folding>
-                    <element signature="e#0#27#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="compound_truck.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="compound_truck.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/compound_truck.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.1293233">
-                  <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
                   <folding>
                     <element signature="e#0#27#0" expanded="true" />
                   </folding>
@@ -155,8 +167,11 @@
             <entry file="file://$PROJECT_DIR$/src/station.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
-                  <folding />
+                  <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
+                  <folding>
+                    <marker date="1446625119441" expanded="true" signature="61:123" placeholder="..." />
+                    <marker date="1446625119441" expanded="true" signature="85:123" placeholder="..." />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -169,16 +184,6 @@
                   <folding>
                     <element signature="e#0#36#0" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="shipping_door.py" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/shipping_door.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0">
-                  <caret line="4" column="41" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -220,18 +225,18 @@
         <option value="$PROJECT_DIR$/src/sequence.py" />
         <option value="$PROJECT_DIR$/windows/main_window.py" />
         <option value="$PROJECT_DIR$/src/truck.py" />
-        <option value="$PROJECT_DIR$/src/door.py" />
-        <option value="$PROJECT_DIR$/src/shipping_door.py" />
-        <option value="$PROJECT_DIR$/src/compound_truck.py" />
-        <option value="$PROJECT_DIR$/src/outbound_truck.py" />
         <option value="$PROJECT_DIR$/src/inbound_truck.py" />
         <option value="$PROJECT_DIR$/src/good.py" />
-        <option value="$PROJECT_DIR$/src/good_store.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/src/solver.py" />
+        <option value="$PROJECT_DIR$/src/door.py" />
+        <option value="$PROJECT_DIR$/src/compound_truck.py" />
+        <option value="$PROJECT_DIR$/src/outbound_truck.py" />
         <option value="$PROJECT_DIR$/src/station.py" />
         <option value="$PROJECT_DIR$/src/simulator.py" />
         <option value="$PROJECT_DIR$/src/receiving_door.py" />
-        <option value="$PROJECT_DIR$/src/solver.py" />
-        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/src/shipping_door.py" />
+        <option value="$PROJECT_DIR$/src/good_store.py" />
       </list>
     </option>
   </component>
@@ -688,13 +693,13 @@
             <element signature="e#2298#4542#0" expanded="false" />
             <element signature="e#4587#5046#0" expanded="false" />
             <element signature="e#5127#5239#0" expanded="false" />
-            <element signature="e#7429#7602#0" expanded="false" />
-            <element signature="e#7660#7835#0" expanded="false" />
-            <element signature="e#7893#8135#0" expanded="false" />
-            <element signature="e#8512#9742#0" expanded="false" />
-            <element signature="e#10132#10588#0" expanded="false" />
-            <element signature="e#11056#11314#0" expanded="false" />
-            <element signature="e#11361#12420#0" expanded="false" />
+            <element signature="e#7430#7603#0" expanded="false" />
+            <element signature="e#7661#7836#0" expanded="false" />
+            <element signature="e#7894#8136#0" expanded="false" />
+            <element signature="e#8513#9743#0" expanded="false" />
+            <element signature="e#10133#10589#0" expanded="false" />
+            <element signature="e#11057#11315#0" expanded="false" />
+            <element signature="e#11362#12421#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -770,13 +775,13 @@
             <element signature="e#2298#4542#0" expanded="false" />
             <element signature="e#4587#5046#0" expanded="false" />
             <element signature="e#5127#5239#0" expanded="false" />
-            <element signature="e#7429#7602#0" expanded="false" />
-            <element signature="e#7660#7835#0" expanded="false" />
-            <element signature="e#7893#8135#0" expanded="false" />
-            <element signature="e#8512#9742#0" expanded="false" />
-            <element signature="e#10132#10588#0" expanded="false" />
-            <element signature="e#11056#11314#0" expanded="false" />
-            <element signature="e#11361#12420#0" expanded="false" />
+            <element signature="e#7430#7603#0" expanded="false" />
+            <element signature="e#7661#7836#0" expanded="false" />
+            <element signature="e#7894#8136#0" expanded="false" />
+            <element signature="e#8513#9743#0" expanded="false" />
+            <element signature="e#10133#10589#0" expanded="false" />
+            <element signature="e#11057#11315#0" expanded="false" />
+            <element signature="e#11362#12421#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -835,13 +840,13 @@
             <element signature="e#2298#4542#0" expanded="false" />
             <element signature="e#4587#5046#0" expanded="false" />
             <element signature="e#5127#5239#0" expanded="false" />
-            <element signature="e#7429#7602#0" expanded="false" />
-            <element signature="e#7660#7835#0" expanded="false" />
-            <element signature="e#7893#8135#0" expanded="false" />
-            <element signature="e#8512#9742#0" expanded="false" />
-            <element signature="e#10132#10588#0" expanded="false" />
-            <element signature="e#11056#11314#0" expanded="false" />
-            <element signature="e#11361#12420#0" expanded="false" />
+            <element signature="e#7430#7603#0" expanded="false" />
+            <element signature="e#7661#7836#0" expanded="false" />
+            <element signature="e#7894#8136#0" expanded="false" />
+            <element signature="e#8513#9743#0" expanded="false" />
+            <element signature="e#10133#10589#0" expanded="false" />
+            <element signature="e#11057#11315#0" expanded="false" />
+            <element signature="e#11362#12421#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -912,16 +917,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/data_store.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="12" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/truck.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -938,18 +933,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/shipping_door.py">
+    <entry file="file://$PROJECT_DIR$/src/compound_truck.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="4" column="41" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
-          <folding />
+          <caret line="20" column="28" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/data_store.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="12" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/outbound_truck.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="24" selection-start-line="16" selection-start-column="24" selection-end-line="16" selection-end-column="24" />
+          <caret line="43" column="12" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
@@ -966,11 +973,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/door.py">
+    <entry file="file://$PROJECT_DIR$/src/station.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="5" column="36" selection-start-line="5" selection-start-column="36" selection-end-line="5" selection-end-column="36" />
-          <folding />
+          <folding>
+            <marker date="1446625119441" expanded="true" signature="61:123" placeholder="..." />
+            <marker date="1446625119441" expanded="true" signature="85:123" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/simulator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="147" column="0" selection-start-line="147" selection-start-column="0" selection-end-line="147" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/solver.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="64" column="66" selection-start-line="64" selection-start-column="66" selection-end-line="64" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -982,10 +1012,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/station.py">
+    <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="18" selection-start-line="5" selection-start-column="18" selection-end-line="5" selection-end-column="18" />
+          <caret line="287" column="0" selection-start-line="287" selection-start-column="0" selection-end-line="287" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#2298#4542#0" expanded="false" />
+            <element signature="e#4587#5046#0" expanded="false" />
+            <element signature="e#5127#5239#0" expanded="false" />
+            <element signature="e#7430#7603#0" expanded="false" />
+            <element signature="e#7661#7836#0" expanded="false" />
+            <element signature="e#7894#8136#0" expanded="false" />
+            <element signature="e#8513#9743#0" expanded="false" />
+            <element signature="e#10133#10589#0" expanded="false" />
+            <element signature="e#11057#11315#0" expanded="false" />
+            <element signature="e#11362#12421#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/door.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20451128">
+          <caret line="8" column="28" selection-start-line="8" selection-start-column="28" selection-end-line="8" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -993,7 +1043,7 @@
     <entry file="file://$PROJECT_DIR$/src/receiving_door.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="30" column="30" selection-start-line="30" selection-start-column="30" selection-end-line="30" selection-end-column="30" />
+          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
@@ -1003,57 +1053,17 @@
     <entry file="file://$PROJECT_DIR$/src/good_store.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/compound_truck.py">
+    <entry file="file://$PROJECT_DIR$/src/shipping_door.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1293233">
-          <caret line="16" column="20" selection-start-line="16" selection-start-column="20" selection-end-line="16" selection-end-column="20" />
+        <state vertical-scroll-proportion="0.8210526">
+          <caret line="45" column="37" selection-start-line="45" selection-start-column="37" selection-end-line="45" selection-end-column="37" />
           <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/simulator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="134" column="12" selection-start-line="134" selection-start-column="12" selection-end-line="134" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/solver.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43458647">
-          <caret line="285" column="0" selection-start-line="285" selection-start-column="0" selection-end-line="285" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-            <element signature="e#2298#4542#0" expanded="false" />
-            <element signature="e#4587#5046#0" expanded="false" />
-            <element signature="e#5127#5239#0" expanded="false" />
-            <element signature="e#7429#7602#0" expanded="false" />
-            <element signature="e#7660#7835#0" expanded="false" />
-            <element signature="e#7893#8135#0" expanded="false" />
-            <element signature="e#8512#9742#0" expanded="false" />
-            <element signature="e#10132#10588#0" expanded="false" />
-            <element signature="e#11056#11314#0" expanded="false" />
-            <element signature="e#11361#12420#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -126,6 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resume_button.clicked.connect(self.resume)
         self.generate_times_button.clicked.connect(self.generate_times)
 
+
     def new_data(self):
         self.data = DataStore()
         self.update_data_table()
@@ -283,7 +284,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solver = Solver(self.data_set_number, self.data)
         self.solver.time_signal.connect(self.time.display)
         self.solver.value_signal.connect(self.solver_truck_signal)
-        self.solver.time_constant = float(self.time_constant.text())
+        self.time_constant.textChanged.connect(self.solver.time_step_change)
 
         sequence = Sequence()
         for box in self.combobox_coming_sequence:

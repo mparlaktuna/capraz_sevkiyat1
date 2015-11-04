@@ -14,6 +14,12 @@ class GoodStore(object):
 
         return self.loading_time * self.total_good_amount()
 
+    def good_amounts(self):
+        amounts = []
+        for i in range(len(self.good_list.values())):
+            amounts.append(sum(goods.amount for goods in self.good_list[str(i + 1)]))
+        return amounts
+
     def total_good_amount(self):
         good_amount = 0
         for goods in self.good_list.values():

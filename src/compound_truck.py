@@ -16,6 +16,9 @@ class CompoundTruck(Truck):
         self.good = GoodStore()
         needed_goods = []
         self.transfer_time = 0
+        self.lower_Bound = 0
+        self.upper_bound = 0
+        self.good_amount = 0
 
     def waiting(self):
         pass
