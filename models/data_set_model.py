@@ -35,7 +35,6 @@ class DataSetModel(QAbstractTableModel):
         for i in range(p_int_1 - p_int):
             self.data.append([0, 0, 0])
         self.endInsertRows()
-        print(self.data)
         return True
 
     def flags(self, QModelIndex):

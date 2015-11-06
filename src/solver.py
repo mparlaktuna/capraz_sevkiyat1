@@ -29,6 +29,8 @@ class Solver(QThread):
         self.current_time = 0
         self.time_constant = 0.1
 
+        self.time_step = False
+
     def setup_solver(self):
         self.setup_doors()
         self.setup_trucks()
@@ -71,7 +73,6 @@ class Solver(QThread):
                 truck.needed_goods[str(i+1)] = good_amount
             self.truck_list[name] = truck
 
-
     def setup_doors(self):
         for i in range(self.data.number_of_receiving_doors):
             name = 'receiving' + str(i)
@@ -79,7 +80,7 @@ class Solver(QThread):
 
         for i in range(self.data.number_of_shipping_doors):
             name = 'shipping' + str(i)
-            self.door_list[name] = ShippingDoor(name, self.station)
+            self.door_list[name] = ShippingDoor(name, self.station, self.door_list)
 
     def set_sequence(self, sequence=Sequence()):
         self.sequence = sequence
@@ -102,12 +103,13 @@ class Solver(QThread):
         self.start()
 
     def run(self):
+        print('start')
         while self.not_finished:
             if not self.pause:
-                time.sleep(self.time_constant)
+                if self.time_step:
+                    time.sleep(self.time_constant)
                 self.step()
                 self.check_finish()
-
 
     def step(self):
         self.current_time += 1

@@ -31,25 +31,25 @@ class GoodStore(object):
         removed_goods = []
         if good_name in self.good_list:
             for goods in self.good_list[good_name]:
-                if goods.amount >= needed_amount:
+                if goods.amount > needed_amount:
                     goods.amount -= needed_amount
                     removed_goods.append([needed_amount, goods.coming_truck_name])
-                elif goods.amount < needed_amount:
+                    needed_amount = 0
+                elif goods.amount <= needed_amount:
                     removed_goods.append([goods.amount, goods.coming_truck_name])
                     needed_amount -= goods.amount
                     goods.amount = 0
+                    self.good_list[good_name].pop(self.good_list[good_name].index(goods))
         return removed_goods
 
     def add_good(self, name, amount, truck=None):
         if name in self.good_list.keys():
             good = Good(name, amount, truck)
             self.good_list[name].append(good)
-            #print(self.good_list)
             return True
         else:
             good = Good(name, amount, truck)
             self.good_list[name] = [good]
-            #print(self.good_list)
             return False
 
     def goods_in_text(self):

@@ -18,6 +18,7 @@ class Truck(QObject):
         self.changeover_time = 0
         self.next_state_time = 0
         self.current_door = None
+        self.finish_time = 0
 
     def run(self, current_time):
         self.current_time = current_time

@@ -65,20 +65,22 @@ class CompoundTruck(Truck):
         self.good_amount = sum(self.needed_goods.values())
         self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
         if self.lower_Bound < self.next_state_time:
-            print('lower')
             self.next_state()
             self.current_door.next_state()
         elif self.next_state_time > self.upper_bound:
-            print('upper')
             self.current_door.next_state()
-            self.next_state()
             self.next_state()
 
     def ready_to_load(self):
-        pass#print('ready_to_load')
+        self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
+        if self.next_state_time >= self.upper_bound - 2:
+            self.next_state()
+            self.current_door.next_state()
 
     def must_load(self):
-        pass
+        if self.current_door.good_ready:
+            self.next_state()
+            self.current_door.next_state()
 
     def loading(self):
         if self.current_time == self.next_state_time:
@@ -94,6 +96,7 @@ class CompoundTruck(Truck):
         if self.current_time == self.next_state_time:
             self.next_state()
             self.current_door.current_state = 0
+            self.finish_time = self.current_time
 
     def done(self):
         pass

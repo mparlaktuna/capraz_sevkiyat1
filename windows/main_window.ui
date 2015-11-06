@@ -27,7 +27,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
@@ -378,7 +378,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="tableView"/>
+           <widget class="QTableView" name="coming_sequence_table"/>
           </item>
          </layout>
         </item>
@@ -395,7 +395,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="tableView_2"/>
+           <widget class="QTableView" name="going_sequence_table"/>
           </item>
          </layout>
         </item>
@@ -412,7 +412,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="tableView_3"/>
+           <widget class="QTableView" name="sequence_error_table"/>
           </item>
          </layout>
         </item>
@@ -480,7 +480,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="stop_data_set_solve_button">
             <property name="text">
              <string>Stop</string>
             </property>
@@ -489,15 +489,6 @@
          </layout>
         </item>
        </layout>
-       <zorder>formLayoutWidget</zorder>
-       <zorder>label_4</zorder>
-       <zorder>tableView</zorder>
-       <zorder>label_5</zorder>
-       <zorder>tableView_2</zorder>
-       <zorder>label_6</zorder>
-       <zorder>tableView_3</zorder>
-       <zorder>label_5</zorder>
-       <zorder>horizontalLayoutWidget</zorder>
       </widget>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">

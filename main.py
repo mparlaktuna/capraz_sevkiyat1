@@ -13,6 +13,9 @@ from src.solver import Solver
 from src.sequence import Sequence
 from src.good_store import GoodStore
 from src.door import Door
+from src.algorithms import Algorithms
+from src.result_data import ResultData
+from models.sequence_table_model import SequenceTableModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -24,6 +27,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data = pickle.load(open('deneme', 'rb'))
         self.truck_states = {}
         self.update_data_table()
+        self.number_of_iterations = 100
         self.setup_data()
         self.connections()
         self.results = {}
@@ -36,7 +40,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_simulator()
         self.graphicsView.parent = self
 
-
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
         self.datasettable.setModel(self.data_set_model)
@@ -48,6 +51,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.compound_coming_good_table.setModel(self.compound_coming_table_model)
         self.compound_going_table_model = GoodTableModel(self.data.number_of_compound_trucks, self.data.number_of_goods, self.data.compound_going_goods, 'compound_going')
         self.compound_going_good_table.setModel(self.compound_going_table_model)
+
+        self.numberOfIterationsLineEdit.setText(str(self.number_of_iterations))
 
     def generate_times(self):
         self.data.arrival_times = []
@@ -117,6 +122,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.numberOfReceivingDoorsSpinBox.valueChanged.connect(self.set_receiving_door_number)
         self.numberOfGoodsSpinBox.valueChanged.connect(self.update_number_of_goods)
 
+        self.stop_data_set_solve_button.clicked.connect(self.stop)
+
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
         self.solve_one_sequence_button.clicked.connect(self.solve_one_sequence)
         self.actionNew_Data.triggered.connect(self.new_data)
@@ -125,7 +132,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pause_button.clicked.connect(self.pause)
         self.resume_button.clicked.connect(self.resume)
         self.generate_times_button.clicked.connect(self.generate_times)
-
+        self.stop_button.clicked.connect(self.finished)
 
     def new_data(self):
         self.data = DataStore()
@@ -267,16 +274,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.truck_states[name] = 'coming'
 
     def solve_data_set(self):
-        self.data_set_number = self.data_set_spin_box.value()
-        self.solver = Solver(self.data_set_number, self.data)
-        # get sequence
-        #self.solver.set_sequence(sequence)
-        self.solver.solve()
+        self.data_set_number = self.data_set_spin_box.value() - 1
+        self.iteration_number = 0
+        self.number_of_iterations = int(self.numberOfIterationsLineEdit.text())
+        self.setup_truck_names()
+        self.algorithms = Algorithms(self.solverComboBox.currentText(), 'start1', self.data_set_number, self.data)
+        self.solution_name = 'data_set_{0}'.format(self.data_set_number)
+        self.results[self.solution_name] = []
+        self.coming_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 0, self.data)
+        self.coming_sequence_table.setModel(self.coming_sequence_table_model)
+        self.next_iteration()
 
     def next_iteration(self):
+        self.solver = Solver(self.data_set_number, self.data)
+        self.solver.done_signal.connect(self.iteration_end)
+        print(self.iteration_number)
+        if self.iteration_number == 0:
+            self.sequence = self.algorithms.start1()
+            self.iteration_number += 1
+        else:
+            self.sequence = self.algorithms.start1()
+            self.iteration_number += 1
+        # get sequence
         # signal from solver
         # increase iteration
-        pass
+        self.solver.set_sequence(self.sequence)
+        self.solver.solve()
+        if self.iteration_number == self.number_of_iterations + 1:
+            self.stop()
+
+    def iteration_end(self):
+        result_data = ResultData(self.data)
+        result_data.sequence = self.sequence
+        self.calculate_error(result_data)
+        self.results[self.solution_name].append(result_data)
+        self.coming_sequence_table_model.insertRows(0,0)
+        self.next_iteration()
+#        self.update_sequence_tables()
+        #self.stop()
+
+    def calculate_error(self, result_data):
+        total_error = 0
+        for truck in self.solver.truck_list.values():
+            if truck.truck_name in self.data.going_truck_name_list:
+                if truck.finish_time > truck.upper_bound:
+                    error = truck.finish_time - truck.upper_bound
+                elif truck.finish_time < truck.lower_bound:
+                    error = truck.lower_bound - truck.finish_time
+                else:
+                    error = 0
+                total_error += error
+        result_data.error = total_error
+
+    def stop(self):
+        print('stop')
+        self.solver.done_signal.disconnect()
 
     def solve_one_sequence(self):
         self.data_set_number = self.data_set_spin_box.value() - 1
@@ -286,6 +338,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solver.value_signal.connect(self.solver_truck_signal)
         self.time_constant.textChanged.connect(self.solver.time_step_change)
         self.solver.done_signal.connect(self.finished)
+        self.solver.time_step = True
         sequence = Sequence()
         for box in self.combobox_coming_sequence:
             sequence.coming_sequence.append(box.currentText())
@@ -314,11 +367,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def finished(self, time):
         print('quit')
+        self.solver.not_finished = False
         self.solver.quit()
-
-
-    def step_solve(self):
-        time.sleep(0.5)
 
     def setup_simulator(self):
         self.graphicsView.reset()

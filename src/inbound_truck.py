@@ -36,6 +36,7 @@ class InboundTruck(Truck):
         if self.current_time == self.next_state_time:
             self.next_state()
             self.current_door.next_state()
+            self.finish_time = self.current_time
 
     def done(self):
         pass
