@@ -15,9 +15,9 @@ class SequenceTableModel(QAbstractTableModel):
 
     def columnCount(self, QModelIndex_parent=None, *args, **kwargs):
         if self.table_type == 0:
-            return len(self.data.coming_truck_name_list) + 1
+            return len(self.data.coming_truck_name_list) + self.data.number_of_receiving_doors - 1
         else:
-            return len(self.data.going_truck_name_list) + 1
+            return len(self.data.going_truck_name_list) + self.data.number_of_shipping_doors - 1
 
     def headerData(self, p_int, Qt_Orientation, int_role=None):
         if int_role == Qt.DisplayRole:

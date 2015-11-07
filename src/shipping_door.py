@@ -16,6 +16,7 @@ class ShippingDoor(Door):
         self.goods = GoodStore()
         self.transfer_amounts = {}
         self.door_list = door_list
+        self.critic = False
 
     def run(self, current_time):
         self.current_time = current_time
@@ -50,6 +51,7 @@ class ShippingDoor(Door):
         self.check_ready()
 
     def must_load(self):
+        self.critic = True
         self.check_self()
         self.transfer_goods(self.station)
         self.critic_transfer_goods()
@@ -84,15 +86,17 @@ class ShippingDoor(Door):
     def critic_transfer_goods(self):
         for transfer_from in self.door_list.values():
             if not transfer_from == self:
-                self.check_ready()
-                self.check_self()
-                if self.good_ready:
-                    break
-                self.transfer_goods(transfer_from)
+                if type(transfer_from) is ShippingDoor:
+                    if transfer_from.critic == False:
+                        self.check_ready()
+                        self.check_self()
+                        if self.good_ready:
+                            break
+                        self.transfer_goods(transfer_from)
 
     def check_ready(self):
         if sum(self.transfer_amounts.values()) == 0:
             self.good_ready = True
 
     def waiting(self):
-        pass
+        self.critic = False

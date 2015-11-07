@@ -6,3 +6,4 @@ class ResultData(object):
         self.sequence = Sequence()
         self.data = data
         self.error = {}
+        self.times = {}

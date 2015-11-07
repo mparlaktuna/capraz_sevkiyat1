@@ -15,9 +15,11 @@ from src.sequence import Sequence, AnnealingSequence, TabuSequence
 from src.good_store import GoodStore
 from src.door import Door
 from src.annealing import Annealing
+from src.tabu import Tabu
 from src.result_data import ResultData
 from models.sequence_table_model import SequenceTableModel
-from models.error_table_model import ErrorTableModel
+from models.error_table_model import AnnealingErrorTableModel, TabuErrorTableModel
+from src.data_writer import gams_writer
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.data = self.data
         self.setup_simulator()
         self.graphicsView.parent = self
+        self.showing_result = []
 
 
     def setup_data(self):
@@ -77,8 +80,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
                 self.data.arrival_times[k][name] = gdj
                 A = gdj + (self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
-                self.data.lower_boundaries[k][name] = A * data_set[0]
-                self.data.upper_boundaries[k][name] = A * data_set[1]
+                self.data.lower_boundaries[k][name] = int(A * data_set[0])
+                self.data.upper_boundaries[k][name] = int(A * data_set[1])
 
             for i in range(self.data.number_of_compound_trucks):
                 name = 'compound' + str(i)
@@ -86,9 +89,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
                 self.data.arrival_times[k][name] = gdj
                 A = gdj + (self.data.coming_mu - 1) * self.data.changeover_time + self.data.coming_mu * self.data.product_per_coming_truck * self.data.loading_time + self.data.changeover_time + self.data.truck_transfer_time +(self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
-                self.data.lower_boundaries[k][name] = A * data_set[0]
-                self.data.upper_boundaries[k][name] = A * data_set[1]
-
+                self.data.lower_boundaries[k][name] = int(A * data_set[0])
+                self.data.upper_boundaries[k][name] = int(A * data_set[1])
         self.load_generated_data()
 
     def load_generated_data(self):
@@ -124,6 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.numberOfReceivingDoorsSpinBox.valueChanged.connect(self.set_receiving_door_number)
         self.numberOfGoodsSpinBox.valueChanged.connect(self.update_number_of_goods)
 
+        self.print_gams.clicked.connect(self.gams_output)
         self.stop_data_set_solve_button.clicked.connect(self.stop)
 
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
@@ -135,6 +138,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resume_button.clicked.connect(self.resume)
         self.generate_times_button.clicked.connect(self.generate_times)
         self.stop_button.clicked.connect(self.finished)
+
+        self.result_names_combo_box.currentTextChanged.connect(self.change_result_name)
+        self.show_results_button.clicked.connect(self.show_results)
 
     def new_data(self):
         self.data = DataStore()
@@ -156,7 +162,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.compound_coming_table_model.truck_number(value)
         self.compound_going_table_model.truck_number(value)
         self.data.number_of_compound_trucks = value
-        print('data', self.data.number_of_compound_trucks)
         self.data.update_truck_numbers()
         self.setup_sequence_solver()
 
@@ -281,15 +286,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data.update_truck_numbers()
 
     def solve_data_set(self):
-        self.annealing = Annealing(self.data)
+        self.annealing = Annealing(self.data, int(self.tempereature_line_edit.text()), float(self.decav_factor_line_edit.text()))
+        self.tabu = Tabu(self.data, int(self.number_of_tabu_line_edit.text()), int(self.number_of_tabu_neighbours_line_edit.text()))
+        self.algorithms = {'annealing': self.annealing, 'tabu': self.tabu}
+        self.algorithm_name = str(self.solverComboBox.currentText())
+        self.algorithm = self.algorithms[self.algorithm_name]
         self.update_truck_numbers()
 
         self.data_set_number = self.data_set_spin_box.value() - 1
         self.iteration_number = 0
         self.number_of_iterations = int(self.numberOfIterationsLineEdit.text())
         self.setup_truck_names()
-        self.solution_name = 'data_set_{0}_{1}'.format(self.solverComboBox.currentText(), self.data_set_number)
+        self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number, self.solverComboBox.currentText(), len(self.results))
         self.results[self.solution_name] = []
+        self.result_names_combo_box.addItem(self.solution_name)
 
         self.coming_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 0, self.data)
         self.coming_sequence_table.setModel(self.coming_sequence_table_model)
@@ -297,8 +307,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.going_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 1, self.data)
         self.going_sequence_table.setModel(self.going_sequence_table_model)
 
-        self.error_sequence_table_model = ErrorTableModel(self.results[self.solution_name], self.data)
-        self.sequence_error_table.setModel(self.error_sequence_table_model)
+        if self.algorithm_name == 'annealing':
+            self.error_sequence_table_model = AnnealingErrorTableModel(self.results[self.solution_name], self.data)
+            self.sequence_error_table.setModel(self.error_sequence_table_model)
+
+        elif self.algorithm_name == 'tabu':
+            self.error_sequence_table_model = TabuErrorTableModel(self.results[self.solution_name], self.data)
+            self.sequence_error_table.setModel(self.error_sequence_table_model)
 
         self.next_iteration()
 
@@ -306,50 +321,95 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solver = Solver(self.data_set_number, self.data)
 
         self.solver.done_signal.connect(self.iteration_end)
+        self.solver.value_signal.connect(self.time_saver)
+
         if self.iteration_number == 0:
-
-            self.sequence = self.annealing.start1()
+            self.sequence = self.algorithm.start1()
             self.iteration_number += 1
+            self.current_result_data = ResultData(self.data)
+            self.current_result_data.sequence = copy.deepcopy(self.sequence)
+            self.results[self.solution_name].append(self.current_result_data)
 
-        else:
-            new_sequence = self.annealing.next_iteration(self.sequence)
-            result_data = ResultData(self.data)
-            result_data.sequence = copy.deepcopy(self.sequence)
-            self.results[self.solution_name].append(result_data)
-            self.coming_sequence_table_model.insertRows(0, 0)
-            self.going_sequence_table_model.insertRows(0, 0)
-            self.error_sequence_table_model.insertRows(0, 0)
-            self.iteration_number += 1
-            self.sequence = new_sequence
+            self.solver.set_sequence(self.sequence)
+            self.solver.solve()
 
-        self.solver.set_sequence(self.sequence)
-        self.solver.solve()
+        elif self.iteration_number < self.number_of_iterations + 1:
+            if self.algorithm_name == 'annealing':
+                new_sequence = self.algorithm.next_iteration(self.sequence)
+                self.current_result_data = ResultData(self.data)
+                self.current_result_data.sequence = copy.deepcopy(self.sequence)
+                self.results[self.solution_name].append(self.current_result_data)
+                self.iteration_number += 1
+                self.sequence = new_sequence
+                self.solver.set_sequence(self.sequence)
+                self.solver.solve()
+            elif self.algorithm_name == 'tabu':
+                new_sequence = self.algorithm.next_iteration(self.sequence)
+                if self.algorithm.iteration_finish:
+                    self.current_result_data = ResultData(self.data)
+                    self.current_result_data.sequence = copy.deepcopy(self.sequence)
+                    self.results[self.solution_name].append(self.current_result_data)
+                    self.iteration_number += 1
+                    self.iteration_end()
+                else:
+                    self.sequence = new_sequence
+                    self.solver.set_sequence(self.sequence)
+                    self.solver.solve()
+
         if self.iteration_number == self.number_of_iterations + 1:
-            print(self.annealing.best_sequence.coming_sequence)
-            print(self.annealing.best_sequence.going_sequence)
-            print(self.annealing.best_sequence.error)
+            print(self.algorithm.best_sequence.coming_sequence)
+            print(self.algorithm.best_sequence.going_sequence)
+            print(self.algorithm.best_sequence.error)
+            self.current_result_data = ResultData(self.data)
+            self.current_result_data.sequence = copy.deepcopy(self.algorithm.best_sequence)
+            self.results[self.solution_name].append(self.current_result_data)
             self.stop()
 
     def iteration_end(self):
-        self.sequence.error = self.calculate_error()
+
+        if self.algorithm_name == 'annealing':
+
+            self.solver.not_finished = False
+            self.solver.quit()
+            self.solver.done_signal.disconnect()
+            self.sequence.error = self.calculate_error()
+            self.coming_sequence_table_model.insertRows(0, 0)
+            self.going_sequence_table_model.insertRows(0, 0)
+            self.error_sequence_table_model.insertRows(0, 0)
+        elif self.algorithm_name == 'tabu':
+            if self.algorithm.iteration_finish:
+                self.algorithm.iteration_finish = False
+                self.coming_sequence_table_model.insertRows(0, 0)
+                self.going_sequence_table_model.insertRows(0, 0)
+                self.error_sequence_table_model.insertRows(0, 0)
+            else:
+                self.solver.not_finished = False
+                self.solver.quit()
+                self.solver.done_signal.disconnect()
+                self.sequence.error = self.calculate_error()
+
         self.next_iteration()
 
     def calculate_error(self):
         total_error = 0
         for truck in self.solver.truck_list.values():
             if truck.truck_name in self.data.going_truck_name_list:
-                if truck.finish_time > truck.upper_bound:
-                    error = truck.finish_time - truck.upper_bound
-                elif truck.finish_time < truck.lower_bound:
-                    error = truck.lower_bound - truck.finish_time
-                else:
-                    error = 0
-                total_error += error
+                if truck.behaviour_list[truck.current_state] == 'done':
+                    if truck.finish_time > truck.upper_bound:
+                        error = truck.finish_time - truck.upper_bound
+                    elif truck.finish_time < truck.lower_bound:
+                        error = truck.lower_bound - truck.finish_time
+                    else:
+                        error = 0
+                    total_error += error
         return total_error
 
     def stop(self):
         print('stop')
-        self.solver.done_signal.disconnect()
+        try:
+            self.solver.done_signal.disconnect()
+        except:
+            pass
 
     def solve_one_sequence(self):
         self.data_set_number = self.data_set_spin_box.value() - 1
@@ -370,9 +430,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solver.set_sequence(sequence)
         self.solver.solve()
 
-    def solver_truck_signal(self, name, state, arg):
+    def solver_truck_signal(self, time, name, state, arg):
         self.truck_states[name] = [state, arg]
         self.graphicsView.update_scene()
+
+    def time_saver(self, time, name, state, arg):
+        if name in self.current_result_data.times.keys():
+            self.current_result_data.times[name].append([state, time])
+        else:
+            self.current_result_data.times[name] = [state, time]
 
     def pause(self):
         try:
@@ -394,6 +460,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setup_simulator(self):
         self.graphicsView.reset()
         self.graphicsView.truck_states = self.truck_states
+
+    def show_results(self):
+        iteration_number = int(self.result_iteration_number_line_edit.text())
+        if iteration_number > len(self.showing_result):
+            self.result_iteration_number_line_edit.setText(str(len(self.showing_result)))
+            iteration_number = self.showing_result
+        print(iteration_number)
+        self.print_results(self.showing_result[iteration_number], iteration_number)
+
+    def change_result_name(self, name):
+        self.solution_name = name
+        self.showing_result = self.results[name]
+
+    def print_results(self, results, iteration_number):
+        self.results_text.clear()
+        text = self.solution_name
+        text += 'Iteration Number: {0}\n'.format(iteration_number)
+        text += 'Sequence\n'
+        text += 'Coming Sequence {0}\n'.format(results.sequence.coming_sequence)
+        text += 'Going Sequence {0}\n'.format(results.sequence.going_sequence)
+        text += 'Error {0}\n\n'.format(results.sequence.error)
+        for truck_name, times in results.times.items():
+            text += '{0} times: {1}\n\n'.format(truck_name, times)
+
+        self.results_text.setText(text)
+
+    def gams_output(self):
+        file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')
+        #try:
+        gams_writer(file_name, self.data_set_spin_box.value(), self.data)
+        # except Exception as e:
+        #     pass
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

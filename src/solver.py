@@ -12,7 +12,7 @@ from src.sequence import Sequence
 
 class Solver(QThread):
     time_signal = pyqtSignal(int, name='time')
-    value_signal = pyqtSignal(str, str, str, name='time_values')
+    value_signal = pyqtSignal(int, str, str, str, name='time_values')
     done_signal = pyqtSignal(int, name='done')
 
     def __init__(self, data_set_number, data=DataStore()):
@@ -91,6 +91,7 @@ class Solver(QThread):
                 i += 1
                 continue
             self.door_list[name].truck_list.append(self.truck_list[truck])
+
         i = 0
         for truck in self.sequence.going_sequence:
             name = 'shipping' + str(i)
@@ -117,7 +118,7 @@ class Solver(QThread):
         for truck in self.truck_list.values():
             signal = truck.run(self.current_time)
             if signal:
-                 self.value_signal.emit(truck.truck_name, truck.behaviour_list[truck.current_state], truck.relevant_data)
+                 self.value_signal.emit(self.current_time,truck.truck_name, truck.behaviour_list[truck.current_state], truck.relevant_data)
 
         for door in self.door_list.values():
             door.run(self.current_time)

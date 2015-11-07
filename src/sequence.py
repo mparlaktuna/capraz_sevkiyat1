@@ -13,6 +13,7 @@ class AnnealingSequence(Sequence):
         self.values['temperature'] = 100
         self.values['random_number'] = 0
         self.values['decision'] = 0
+        self.values['p_accept'] = -1
 
 class TabuSequence(Sequence):
 
