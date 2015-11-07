@@ -71,11 +71,15 @@ class ShippingDoor(Door):
                 self.transfer_amounts[good_name] = copy.deepcopy(self.needed_goods[good_name])
 
     def transfer_goods(self, transfor_from=None):
-        if not self.good_ready:
-            for good_name, good_amount in self.transfer_amounts.items():
-                remove_goods = transfor_from.goods_list.remove_good(good_name, good_amount)
-                for remove_good in remove_goods:
-                    self.goods.add_good(good_name, remove_good[0], remove_good[1])
+        try:
+            if not self.good_ready:
+                for good_name, good_amount in self.transfer_amounts.items():
+                    remove_goods = transfor_from.goods_list.remove_good(good_name, good_amount)
+
+                    for remove_good in remove_goods:
+                        self.goods.add_good(good_name, remove_good[0], remove_good[1])
+        except:
+            pass
 
     def critic_transfer_goods(self):
         for transfer_from in self.door_list.values():

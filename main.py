@@ -1,6 +1,7 @@
 import sys
 import time
 import pickle
+import copy
 from random import uniform
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui, QtCore
@@ -10,12 +11,13 @@ from models.data_set_model import DataSetModel
 from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
 from src.solver import Solver
-from src.sequence import Sequence
+from src.sequence import Sequence, AnnealingSequence, TabuSequence
 from src.good_store import GoodStore
 from src.door import Door
-from src.algorithms import Algorithms
+from src.annealing import Annealing
 from src.result_data import ResultData
 from models.sequence_table_model import SequenceTableModel
+from models.error_table_model import ErrorTableModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -24,7 +26,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.data = DataStore()
-        self.data = pickle.load(open('deneme', 'rb'))
         self.truck_states = {}
         self.update_data_table()
         self.number_of_iterations = 100
@@ -39,6 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.data = self.data
         self.setup_simulator()
         self.graphicsView.parent = self
+
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -154,6 +156,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.compound_coming_table_model.truck_number(value)
         self.compound_going_table_model.truck_number(value)
         self.data.number_of_compound_trucks = value
+        print('data', self.data.number_of_compound_trucks)
         self.data.update_truck_numbers()
         self.setup_sequence_solver()
 
@@ -251,6 +254,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sequence_grid.addWidget(box, 1, i)
 
     def setup_truck_names(self):
+
         GoodStore.loading_time = self.data.loading_time
         Door.good_transfer_time = self.data.good_transfer_time
         self.data.truck_name_list = []
@@ -273,47 +277,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.data.going_truck_name_list.append(name)
             self.truck_states[name] = 'coming'
 
+    def update_truck_numbers(self):
+        self.data.update_truck_numbers()
+
     def solve_data_set(self):
+        self.annealing = Annealing(self.data)
+        self.update_truck_numbers()
+
         self.data_set_number = self.data_set_spin_box.value() - 1
         self.iteration_number = 0
         self.number_of_iterations = int(self.numberOfIterationsLineEdit.text())
         self.setup_truck_names()
-        self.algorithms = Algorithms(self.solverComboBox.currentText(), 'start1', self.data_set_number, self.data)
-        self.solution_name = 'data_set_{0}'.format(self.data_set_number)
+        self.solution_name = 'data_set_{0}_{1}'.format(self.solverComboBox.currentText(), self.data_set_number)
         self.results[self.solution_name] = []
+
         self.coming_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 0, self.data)
         self.coming_sequence_table.setModel(self.coming_sequence_table_model)
+
+        self.going_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 1, self.data)
+        self.going_sequence_table.setModel(self.going_sequence_table_model)
+
+        self.error_sequence_table_model = ErrorTableModel(self.results[self.solution_name], self.data)
+        self.sequence_error_table.setModel(self.error_sequence_table_model)
+
         self.next_iteration()
 
     def next_iteration(self):
         self.solver = Solver(self.data_set_number, self.data)
+
         self.solver.done_signal.connect(self.iteration_end)
-        print(self.iteration_number)
         if self.iteration_number == 0:
-            self.sequence = self.algorithms.start1()
+
+            self.sequence = self.annealing.start1()
             self.iteration_number += 1
+
         else:
-            self.sequence = self.algorithms.start1()
+            new_sequence = self.annealing.next_iteration(self.sequence)
+            result_data = ResultData(self.data)
+            result_data.sequence = copy.deepcopy(self.sequence)
+            self.results[self.solution_name].append(result_data)
+            self.coming_sequence_table_model.insertRows(0, 0)
+            self.going_sequence_table_model.insertRows(0, 0)
+            self.error_sequence_table_model.insertRows(0, 0)
             self.iteration_number += 1
-        # get sequence
-        # signal from solver
-        # increase iteration
+            self.sequence = new_sequence
+
         self.solver.set_sequence(self.sequence)
         self.solver.solve()
         if self.iteration_number == self.number_of_iterations + 1:
+            print(self.annealing.best_sequence.coming_sequence)
+            print(self.annealing.best_sequence.going_sequence)
+            print(self.annealing.best_sequence.error)
             self.stop()
 
     def iteration_end(self):
-        result_data = ResultData(self.data)
-        result_data.sequence = self.sequence
-        self.calculate_error(result_data)
-        self.results[self.solution_name].append(result_data)
-        self.coming_sequence_table_model.insertRows(0,0)
+        self.sequence.error = self.calculate_error()
         self.next_iteration()
-#        self.update_sequence_tables()
-        #self.stop()
 
-    def calculate_error(self, result_data):
+    def calculate_error(self):
         total_error = 0
         for truck in self.solver.truck_list.values():
             if truck.truck_name in self.data.going_truck_name_list:
@@ -324,7 +345,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     error = 0
                 total_error += error
-        result_data.error = total_error
+        return total_error
 
     def stop(self):
         print('stop')

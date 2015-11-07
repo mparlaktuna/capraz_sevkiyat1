@@ -81,7 +81,6 @@ class GoodTableModel(QAbstractTableModel):
         if int_role == Qt.EditRole:
             if QModelIndex.isValid():
                 try:
-                    pass
                     self.good_data[QModelIndex.row()][QModelIndex.column()] = float(QVariant)
                 except:
                     pass

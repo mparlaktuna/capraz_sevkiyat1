@@ -45,33 +45,33 @@ class Solver(QThread):
             for k, good_amount in enumerate(self.data.inbound_goods[i]):
                 truck.good.add_good(str(k + 1), good_amount, truck.truck_name)
             self.truck_list[name] = truck
+        for m in range(self.data.number_of_data_sets):
+            for i in range(self.data.number_of_outbound_trucks):
+                name = 'outbound' + str(i)
+                truck = OutboundTruck()
+                truck.truck_name = name
+                truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
+                truck.changeover_time = self.data.changeover_time
+                for k, good_amount in enumerate(self.data.outbound_goods[i]):
+                    truck.needed_goods[str(k+1)] = good_amount
+                truck.lower_Bound = self.data.lower_boundaries[m][name]
+                truck.upper_bound = self.data.upper_boundaries[m][name]
+                self.truck_list[name] = truck
 
-        for i in range(self.data.number_of_outbound_trucks):
-            name = 'outbound' + str(i)
-            truck = OutboundTruck()
-            truck.truck_name = name
-            truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
-            truck.changeover_time = self.data.changeover_time
-            for i, good_amount in enumerate(self.data.outbound_goods[i]):
-                truck.needed_goods[str(i+1)] = good_amount
-            truck.lower_Bound = self.data.lower_boundaries[i][name]
-            truck.upper_bound = self.data.upper_boundaries[i][name]
-            self.truck_list[name] = truck
-
-        for i in range(self.data.number_of_compound_trucks):
-            name = 'compound' + str(i)
-            truck = CompoundTruck()
-            truck.truck_name = name
-            truck.transfer_time = self.data.truck_transfer_time
-            truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
-            truck.changeover_time = self.data.changeover_time
-            truck.lower_Bound = self.data.lower_boundaries[i][name]
-            truck.upper_bound = self.data.upper_boundaries[i][name]
-            for k, good_amount in enumerate(self.data.compound_coming_goods[i]):
-                truck.good.add_good(str(k + 1), good_amount, truck.truck_name)
-            for i, good_amount in enumerate(self.data.compound_going_goods[i]):
-                truck.needed_goods[str(i+1)] = good_amount
-            self.truck_list[name] = truck
+            for i in range(self.data.number_of_compound_trucks):
+                name = 'compound' + str(i)
+                truck = CompoundTruck()
+                truck.truck_name = name
+                truck.transfer_time = self.data.truck_transfer_time
+                truck.times['arrival_time'] = self.data.arrival_times[self.data_set_number][name]
+                truck.changeover_time = self.data.changeover_time
+                truck.lower_Bound = self.data.lower_boundaries[m][name]
+                truck.upper_bound = self.data.upper_boundaries[m][name]
+                for k, good_amount in enumerate(self.data.compound_coming_goods[i]):
+                    truck.good.add_good(str(k + 1), good_amount, truck.truck_name)
+                for j, good_amount in enumerate(self.data.compound_going_goods[i]):
+                    truck.needed_goods[str(j+1)] = good_amount
+                self.truck_list[name] = truck
 
     def setup_doors(self):
         for i in range(self.data.number_of_receiving_doors):

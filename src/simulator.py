@@ -37,26 +37,29 @@ class Simulator(QGraphicsView):
         self.fitInView(self.scn.itemsBoundingRect(), Qt.KeepAspectRatio)
 
     def setup_doors(self):
-        step = 400 / self.data.number_of_receiving_doors
-        for i in range(self.data.number_of_receiving_doors):
-            name = 'receiving' + str(i)
-            self.door_positions[name] = [-250, -200 + step * (i + 1) - step/2]
-            door = QGraphicsTextItem(name)
-            self.doors[name] = door
-            door.setPos(-180, -200 + step * (i + 1) - step/2)
-            self.scn.addItem(door)
-            self.scn.addItem(QGraphicsLineItem(-100,-200 + step * i , -300, -200 + step * i))
+        try:
+            step = 400 / self.data.number_of_receiving_doors
+            for i in range(self.data.number_of_receiving_doors):
+                name = 'receiving' + str(i)
+                self.door_positions[name] = [-250, -200 + step * (i + 1) - step/2]
+                door = QGraphicsTextItem(name)
+                self.doors[name] = door
+                door.setPos(-180, -200 + step * (i + 1) - step/2)
+                self.scn.addItem(door)
+                self.scn.addItem(QGraphicsLineItem(-100,-200 + step * i , -300, -200 + step * i))
 
-        step = 400 / self.data.number_of_shipping_doors
+            step = 400 / self.data.number_of_shipping_doors
 
-        for i in range(self.data.number_of_shipping_doors):
-            name = 'shipping' + str(i)
-            door = QGraphicsTextItem(name)
-            self.doors[name] = door
-            door.setPos(100, -200 + step * (i + 1) - step/2)
-            self.door_positions[name] = [200, -200 + step * (i + 1) - step/2]
-            self.scn.addItem(door)
-            self.scn.addItem(QGraphicsLineItem(100,-200 + step * i , 300, -200 + step * i))
+            for i in range(self.data.number_of_shipping_doors):
+                name = 'shipping' + str(i)
+                door = QGraphicsTextItem(name)
+                self.doors[name] = door
+                door.setPos(100, -200 + step * (i + 1) - step/2)
+                self.door_positions[name] = [200, -200 + step * (i + 1) - step/2]
+                self.scn.addItem(door)
+                self.scn.addItem(QGraphicsLineItem(100,-200 + step * i , 300, -200 + step * i))
+        except:
+            pass
 
     def setup_trucks(self):
         step = 50

@@ -14,7 +14,7 @@ class SequenceTableModel(QAbstractTableModel):
         return len(self.results)
 
     def columnCount(self, QModelIndex_parent=None, *args, **kwargs):
-        if self.table_type:
+        if self.table_type == 0:
             return len(self.data.coming_truck_name_list) + 1
         else:
             return len(self.data.going_truck_name_list) + 1
@@ -34,7 +34,9 @@ class SequenceTableModel(QAbstractTableModel):
         if not QModelIndex.isValid() or not(0 < len(self.results)):
             return QVariant()
         if int_role == Qt.DisplayRole:
-            return QVariant(self.results[QModelIndex.row()].sequence.coming_sequence[QModelIndex.column()])
-
+            if self.table_type == 0:
+                return QVariant(self.results[QModelIndex.row()].sequence.coming_sequence[QModelIndex.column()])
+            else:
+                return QVariant(self.results[QModelIndex.row()].sequence.going_sequence[QModelIndex.column()])
         else:
             return QVariant()

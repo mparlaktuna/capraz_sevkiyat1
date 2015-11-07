@@ -41,9 +41,11 @@ class OutboundTruck(Truck):
 
     def ready_to_load(self):
         self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
+
         if self.next_state_time >= self.upper_bound - 2:
             self.next_state()
             self.current_door.next_state()
+
 
     def must_load(self):
         if self.current_door.good_ready:
