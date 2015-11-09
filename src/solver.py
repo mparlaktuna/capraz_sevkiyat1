@@ -104,7 +104,6 @@ class Solver(QThread):
         self.start()
 
     def run(self):
-        print('start')
         while self.not_finished:
             if not self.pause:
                 if self.time_step:
@@ -138,5 +137,10 @@ class Solver(QThread):
             finished = finished and (truck.behaviour_list[truck.current_state] == 'done')
         if finished:
             self.not_finished = False
-            print('finished')
             self.done_signal.emit(self.current_time)
+
+    def return_goods(self):
+        good_list = {}
+        for truck_name in self.data.going_truck_name_list:
+            good_list[truck_name] = self.truck_list[truck_name].good.return_goods()
+        return good_list

@@ -20,7 +20,7 @@ class CompoundTruck(Truck):
         self.good = GoodStore()
         self.needed_goods = {}
         self.transfer_time = 0
-        self.lower_Bound = 0
+        self.lower_bound = 0
         self.upper_bound = 0
         self.good_amount = 0
 
@@ -74,7 +74,7 @@ class CompoundTruck(Truck):
 
     def ready_to_load(self):
         self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
-        if self.next_state_time >= self.upper_bound - 2:
+        if self.next_state_time >= self.upper_bound - self.changeover_time - 1:
             self.next_state()
             self.current_door.next_state()
 

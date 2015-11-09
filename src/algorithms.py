@@ -12,6 +12,7 @@ class Algorithms(object):
         self.arrivals = self.data.arrival_times[self.data_set_number]
         self.sequence = Sequence()
         self.best_sequence = Sequence()
+        self.best_iteration = 0
 
     def start1(self):
         sorted_in = sorted(self.arrivals.items(), key=operator.itemgetter(1))
@@ -30,11 +31,11 @@ class Algorithms(object):
             self.sequence.going_sequence.insert(step * (i+1), '0')
 
         self.best_sequence = copy.deepcopy(self.sequence)
-        print(self.sequence.coming_sequence)
-        print(self.sequence.going_sequence)
+
         return self.sequence
 
-    def generate_random(self, sequence):
+    def generate_random(self, prev_sequence):
+        sequence = copy.deepcopy(prev_sequence)
         a = random.choice(range(len(sequence)))
         b = random.choice(range(len(sequence)))
         if a == b:

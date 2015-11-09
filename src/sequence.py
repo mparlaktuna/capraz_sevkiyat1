@@ -19,3 +19,5 @@ class TabuSequence(Sequence):
 
     def __init__(self):
         Sequence.__init__(self)
+        self.values['iteration number'] = 0
+        self.values['decision'] = 0

@@ -61,3 +61,16 @@ class GoodStore(object):
             return text
         except:
             return 'empty'
+
+    def return_goods(self):
+        good_amounts = {}
+        try:
+            for goods in self.good_list.values():
+                for good in goods:
+                    if good.coming_truck_name in good_amounts.keys():
+                        good_amounts[good.coming_truck_name] += 'Type:{0} Amount {1}\n'.format(good.good_name, good.amount)
+                    else:
+                        good_amounts[good.coming_truck_name] = 'Type:{0} Amount {1}\n'.format(good.good_name, good.amount)
+        except:
+            pass
+        return good_amounts

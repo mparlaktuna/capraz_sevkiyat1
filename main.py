@@ -19,6 +19,9 @@ from src.tabu import Tabu
 from src.result_data import ResultData
 from models.sequence_table_model import SequenceTableModel
 from models.error_table_model import AnnealingErrorTableModel, TabuErrorTableModel
+from models.result_sequence_table_model import ResultSequenceTableModel
+from models.result_good_table_model import ResultGoodTableModel
+from models.result_time_table_model import ResultTimeTableModel
 from src.data_writer import gams_writer
 
 
@@ -28,6 +31,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.data = DataStore()
+        self.data = pickle.load(open('deneme', 'rb'))
         self.truck_states = {}
         self.update_data_table()
         self.number_of_iterations = 100
@@ -43,6 +47,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_simulator()
         self.graphicsView.parent = self
         self.showing_result = []
+        self.result_times = {}
 
 
     def setup_data(self):
@@ -297,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.iteration_number = 0
         self.number_of_iterations = int(self.numberOfIterationsLineEdit.text())
         self.setup_truck_names()
-        self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number, self.solverComboBox.currentText(), len(self.results))
+        self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number + 1, self.solverComboBox.currentText(), len(self.results) + 1)
         self.results[self.solution_name] = []
         self.result_names_combo_box.addItem(self.solution_name)
 
@@ -317,76 +322,89 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.next_iteration()
 
+    def save_results(self):
+        self.current_result_data = ResultData(self.data)
+        self.current_result_data.times = copy.deepcopy(self.result_times)
+        self.sequence.error = self.calculate_error()
+        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+        self.current_result_data.goods = self.solver.return_goods()
+        self.result_times = {}
+        self.results[self.solution_name].append(self.current_result_data)
+        self.coming_sequence_table_model.insertRows(0, 0)
+        self.going_sequence_table_model.insertRows(0, 0)
+        self.error_sequence_table_model.insertRows(0, 0)
+
+    def save_tabu_results(self):
+        self.current_result_data = ResultData(self.data)
+        self.current_result_data.times = {}
+        self.sequence.error = float('inf')
+        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+        self.current_result_data.goods = {}
+        self.result_times = {}
+        self.results[self.solution_name].append(self.current_result_data)
+        self.coming_sequence_table_model.insertRows(0, 0)
+        self.going_sequence_table_model.insertRows(0, 0)
+        self.error_sequence_table_model.insertRows(0, 0)
+
     def next_iteration(self):
         self.solver = Solver(self.data_set_number, self.data)
-
         self.solver.done_signal.connect(self.iteration_end)
         self.solver.value_signal.connect(self.time_saver)
 
         if self.iteration_number == 0:
-            self.sequence = self.algorithm.start1()
+            self.sequence = copy.deepcopy(self.algorithm.start1())
             self.iteration_number += 1
-            self.current_result_data = ResultData(self.data)
-            self.current_result_data.sequence = copy.deepcopy(self.sequence)
-            self.results[self.solution_name].append(self.current_result_data)
-
             self.solver.set_sequence(self.sequence)
             self.solver.solve()
 
         elif self.iteration_number < self.number_of_iterations + 1:
             if self.algorithm_name == 'annealing':
-                new_sequence = self.algorithm.next_iteration(self.sequence)
-                self.current_result_data = ResultData(self.data)
+                new_sequence = self.algorithm.next_iteration(self.sequence, self.iteration_number)
                 self.current_result_data.sequence = copy.deepcopy(self.sequence)
-                self.results[self.solution_name].append(self.current_result_data)
                 self.iteration_number += 1
                 self.sequence = new_sequence
                 self.solver.set_sequence(self.sequence)
                 self.solver.solve()
             elif self.algorithm_name == 'tabu':
-                new_sequence = self.algorithm.next_iteration(self.sequence)
-                if self.algorithm.iteration_finish:
-                    self.current_result_data = ResultData(self.data)
-                    self.current_result_data.sequence = copy.deepcopy(self.sequence)
-                    self.results[self.solution_name].append(self.current_result_data)
+#                print(self.algorithm.generated_neighbour_number)
+                if self.algorithm.generated_neighbour_number == self.algorithm.number_of_neighbours:
+                    self.algorithm.generated_neighbour_number = 0
+                    decision_list = self.algorithm.choose_sequence()
+                    for i, decision in enumerate(decision_list):
+                        self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
                     self.iteration_number += 1
-                    self.iteration_end()
+                    self.next_iteration()
                 else:
+                    new_sequence = self.algorithm.next_iteration(self.iteration_number)
                     self.sequence = new_sequence
-                    self.solver.set_sequence(self.sequence)
-                    self.solver.solve()
+                    self.algorithm.generated_neighbour_number += 1
+                    if self.algorithm.check_tabu(self.sequence):
+                        self.save_tabu_results()
+                        self.next_iteration()
+                    else:
+                        self.solver.set_sequence(self.sequence)
+                        self.solver.solve()
 
-        if self.iteration_number == self.number_of_iterations + 1:
-            print(self.algorithm.best_sequence.coming_sequence)
-            print(self.algorithm.best_sequence.going_sequence)
-            print(self.algorithm.best_sequence.error)
-            self.current_result_data = ResultData(self.data)
-            self.current_result_data.sequence = copy.deepcopy(self.algorithm.best_sequence)
-            self.results[self.solution_name].append(self.current_result_data)
+        elif self.iteration_number == self.number_of_iterations + 1:
+            # print(self.algorithm.best_sequence.coming_sequence)
+            # print(self.algorithm.best_sequence.going_sequence)
+            # print(self.algorithm.best_sequence.error)
             self.stop()
 
     def iteration_end(self):
-
+        self.save_results()
         if self.algorithm_name == 'annealing':
-
             self.solver.not_finished = False
             self.solver.quit()
             self.solver.done_signal.disconnect()
-            self.sequence.error = self.calculate_error()
-            self.coming_sequence_table_model.insertRows(0, 0)
-            self.going_sequence_table_model.insertRows(0, 0)
-            self.error_sequence_table_model.insertRows(0, 0)
+
         elif self.algorithm_name == 'tabu':
             if self.algorithm.iteration_finish:
                 self.algorithm.iteration_finish = False
-                self.coming_sequence_table_model.insertRows(0, 0)
-                self.going_sequence_table_model.insertRows(0, 0)
-                self.error_sequence_table_model.insertRows(0, 0)
             else:
                 self.solver.not_finished = False
                 self.solver.quit()
                 self.solver.done_signal.disconnect()
-                self.sequence.error = self.calculate_error()
 
         self.next_iteration()
 
@@ -395,12 +413,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for truck in self.solver.truck_list.values():
             if truck.truck_name in self.data.going_truck_name_list:
                 if truck.behaviour_list[truck.current_state] == 'done':
+                    self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
                     if truck.finish_time > truck.upper_bound:
                         error = truck.finish_time - truck.upper_bound
                     elif truck.finish_time < truck.lower_bound:
                         error = truck.lower_bound - truck.finish_time
                     else:
                         error = 0
+                    self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+                    self.current_result_data.times[truck.truck_name].append(['error', error])
                     total_error += error
         return total_error
 
@@ -413,21 +434,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def solve_one_sequence(self):
         self.data_set_number = self.data_set_spin_box.value() - 1
+        self.solution_name = 'data_set{0}_simulation_{1}'.format(self.data_set_number + 1, len(self.results) + 1)
+        self.results[self.solution_name] = []
+        self.result_names_combo_box.addItem(self.solution_name)
+
+        self.data_set_number = self.data_set_spin_box.value() - 1
         self.setup_truck_names()
         self.solver = Solver(self.data_set_number, self.data)
         self.solver.time_signal.connect(self.time.display)
         self.solver.value_signal.connect(self.solver_truck_signal)
+        self.solver.value_signal.connect(self.time_saver)
         self.time_constant.textChanged.connect(self.solver.time_step_change)
         self.solver.done_signal.connect(self.finished)
         self.solver.time_step = True
-        sequence = Sequence()
+        self.sequence = Sequence()
         for box in self.combobox_coming_sequence:
-            sequence.coming_sequence.append(box.currentText())
+            self.sequence.coming_sequence.append(box.currentText())
         for box in self.combobox_going_sequence:
-            sequence.going_sequence.append(box.currentText())
+            self.sequence.going_sequence.append(box.currentText())
         self.graphicsView.reset()
         self.graphicsView.update_scene()
-        self.solver.set_sequence(sequence)
+        self.solver.set_sequence(self.sequence)
         self.solver.solve()
 
     def solver_truck_signal(self, time, name, state, arg):
@@ -435,10 +462,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.update_scene()
 
     def time_saver(self, time, name, state, arg):
-        if name in self.current_result_data.times.keys():
-            self.current_result_data.times[name].append([state, time])
+        if name in self.result_times.keys():
+            self.result_times[name].append([state, time])
         else:
-            self.current_result_data.times[name] = [state, time]
+            self.result_times[name] = [[state, time]]
 
     def pause(self):
         try:
@@ -453,6 +480,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def finished(self, time):
+        self.current_result_data = ResultData(self.data)
+        self.current_result_data.times = copy.deepcopy(self.result_times)
+        self.sequence.error = self.calculate_error()
+        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+        self.current_result_data.goods = self.solver.return_goods()
+        self.results[self.solution_name].append(self.current_result_data)
+
         print('quit')
         self.solver.not_finished = False
         self.solver.quit()
@@ -462,29 +496,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.truck_states = self.truck_states
 
     def show_results(self):
-        iteration_number = int(self.result_iteration_number_line_edit.text())
+        iteration_number = int(self.result_iteration_number_line_edit.text()) - 1
         if iteration_number > len(self.showing_result):
             self.result_iteration_number_line_edit.setText(str(len(self.showing_result)))
-            iteration_number = self.showing_result
-        print(iteration_number)
-        self.print_results(self.showing_result[iteration_number], iteration_number)
+            iteration_number = len(self.showing_result)
+
+        result_sequence_model = ResultSequenceTableModel(self.showing_result[iteration_number], self.data)
+        self.sequence_table.setModel(result_sequence_model)
+
+        result_good_model = ResultGoodTableModel(self.showing_result[iteration_number], self.data)
+        self.good_in_out_table.setModel(result_good_model)
+        self.good_in_out_table.resizeColumnsToContents()
+        self.good_in_out_table.resizeRowsToContents()
+
+        inbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_inbound_trucks, 'inbound')
+        self.inbound_time_table.setModel(inbound_time_model)
+
+        outbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_outbound_trucks, 'outbound')
+        self.outbound_time_table.setModel(outbound_time_model)
+
+        compound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_compound_trucks, 'compound')
+        self.compound_time_table.setModel(compound_time_model)
 
     def change_result_name(self, name):
         self.solution_name = name
         self.showing_result = self.results[name]
 
     def print_results(self, results, iteration_number):
-        self.results_text.clear()
-        text = self.solution_name
-        text += 'Iteration Number: {0}\n'.format(iteration_number)
-        text += 'Sequence\n'
-        text += 'Coming Sequence {0}\n'.format(results.sequence.coming_sequence)
-        text += 'Going Sequence {0}\n'.format(results.sequence.going_sequence)
-        text += 'Error {0}\n\n'.format(results.sequence.error)
-        for truck_name, times in results.times.items():
-            text += '{0} times: {1}\n\n'.format(truck_name, times)
-
-        self.results_text.setText(text)
+        pass
 
     def gams_output(self):
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')

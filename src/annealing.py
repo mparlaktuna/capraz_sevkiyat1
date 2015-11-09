@@ -18,7 +18,7 @@ class Annealing(Algorithms):
 
         self.decrease_constant = decay_factor
 
-    def next_iteration(self, sequence):
+    def next_iteration(self, sequence, iteration_number):
         if sequence.error <= self.prev_sequence_error:
             sequence.values['decision'] = 'better sequence'
             self.prev_sequence = copy.deepcopy(sequence)
@@ -26,6 +26,7 @@ class Annealing(Algorithms):
             if sequence.error < self.best_sequence.error:
                 sequence.values['decision'] = 'best sequence'
                 self.best_sequence = copy.deepcopy(sequence)
+                self.best_iteration = iteration_number
 
         else:
             p_accept = math.exp((self.prev_sequence_error - sequence.error) / self.prev_sequence.values['temperature'])

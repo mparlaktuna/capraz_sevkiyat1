@@ -7,3 +7,4 @@ class ResultData(object):
         self.data = data
         self.error = {}
         self.times = {}
+        self.goods = {}

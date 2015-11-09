@@ -45,7 +45,9 @@ class AnnealingErrorTableModel(QAbstractTableModel):
                 return QVariant(self.results[QModelIndex.row()].sequence.values['random_number'])
             if QModelIndex.column() == 4:
                 return QVariant(self.results[QModelIndex.row()].sequence.values['decision'])
-
+        if int_role == Qt.BackgroundRole:
+            if self.results[QModelIndex.row()].sequence.values['decision'] == 'best sequence':
+                return QBrush(Qt.yellow)
         else:
             return QVariant()
 
@@ -55,13 +57,13 @@ class TabuErrorTableModel(QAbstractTableModel):
         super(TabuErrorTableModel, self).__init__()
         self.data = data
         self.results = results
-        self.header = ('error')
+        self.header = ('error', 'iteration number', 'decision')
 
     def rowCount(self, QModelIndex_parent=None, *args, **kwargs):
         return len(self.results)
 
     def columnCount(self, QModelIndex_parent=None, *args, **kwargs):
-        return 1
+        return 3
 
     def headerData(self, p_int, Qt_Orientation, int_role=None):
         if Qt_Orientation == Qt.Vertical:
@@ -82,7 +84,17 @@ class TabuErrorTableModel(QAbstractTableModel):
         if not QModelIndex.isValid() or not(0 < len(self.results)):
             return QVariant()
         if int_role == Qt.DisplayRole:
+            if QModelIndex.column() == 0:
                 return QVariant(self.results[QModelIndex.row()].sequence.error)
+            if QModelIndex.column() == 1:
+                return QVariant(self.results[QModelIndex.row()].sequence.values['iteration number'])
+            if QModelIndex.column() == 2:
+                return QVariant(self.results[QModelIndex.row()].sequence.values['decision'])
+        if int_role == Qt.BackgroundRole:
+            if self.results[QModelIndex.row()].sequence.values['decision'] == 'best sequence':
+                return QBrush(Qt.yellow)
+            if self.results[QModelIndex.row()].sequence.values['decision'] == 'tabu':
+                return QBrush(Qt.red)
         else:
             return QVariant()
 
