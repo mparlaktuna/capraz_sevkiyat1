@@ -27,7 +27,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
@@ -206,7 +206,7 @@
            </layout>
           </item>
           <item>
-           <widget class="QTableView" name="datasettable">
+           <widget class="ClipboardTableView" name="datasettable">
             <property name="accessibleDescription">
              <string/>
             </property>
@@ -214,13 +214,13 @@
              <number>1</number>
             </property>
             <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
+             <set>QAbstractItemView::DoubleClicked</set>
             </property>
             <property name="tabKeyNavigation">
              <bool>false</bool>
             </property>
             <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
+             <enum>QAbstractItemView::ExtendedSelection</enum>
             </property>
             <property name="sortingEnabled">
              <bool>true</bool>
@@ -238,30 +238,30 @@
         <item row="0" column="1">
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QTableView" name="inbound_good_table">
+           <widget class="ClipboardTableView" name="inbound_good_table">
             <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
+             <set>QAbstractItemView::DoubleClicked</set>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="compound_coming_good_table">
+           <widget class="ClipboardTableView" name="compound_coming_good_table">
             <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
+             <set>QAbstractItemView::DoubleClicked</set>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="outbound_good_table">
+           <widget class="ClipboardTableView" name="outbound_good_table">
             <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
+             <set>QAbstractItemView::DoubleClicked</set>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="compound_going_good_table">
+           <widget class="ClipboardTableView" name="compound_going_good_table">
             <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
+             <set>QAbstractItemView::DoubleClicked</set>
             </property>
            </widget>
           </item>
@@ -294,7 +294,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="arrival_time_table">
+           <widget class="ClipboardTableView" name="arrival_time_table">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -315,7 +315,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="leaving_lower_table">
+           <widget class="ClipboardTableView" name="leaving_lower_table">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -336,7 +336,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="leaving_upper_table">
+           <widget class="ClipboardTableView" name="leaving_upper_table">
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -520,7 +520,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="coming_sequence_table"/>
+           <widget class="ClipboardTableView" name="coming_sequence_table"/>
           </item>
          </layout>
         </item>
@@ -537,7 +537,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="going_sequence_table"/>
+           <widget class="ClipboardTableView" name="going_sequence_table"/>
           </item>
          </layout>
         </item>
@@ -554,7 +554,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="sequence_error_table"/>
+           <widget class="ClipboardTableView" name="sequence_error_table"/>
           </item>
          </layout>
         </item>
@@ -705,7 +705,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTableView" name="sequence_table"/>
+                 <widget class="ClipboardTableView" name="sequence_table"/>
                 </item>
                </layout>
               </item>
@@ -722,7 +722,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTableView" name="inbound_time_table"/>
+                 <widget class="ClipboardTableView" name="inbound_time_table"/>
                 </item>
                </layout>
               </item>
@@ -738,7 +738,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QTableView" name="good_in_out_table">
+               <widget class="ClipboardTableView" name="good_in_out_table">
                 <property name="sizeAdjustPolicy">
                  <enum>QAbstractScrollArea::AdjustToContents</enum>
                 </property>
@@ -764,7 +764,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableView" name="outbound_time_table"/>
+             <widget class="ClipboardTableView" name="outbound_time_table"/>
             </item>
            </layout>
           </item>
@@ -781,7 +781,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QTableView" name="compound_time_table"/>
+             <widget class="ClipboardTableView" name="compound_time_table"/>
             </item>
            </layout>
           </item>
@@ -840,6 +840,11 @@
    <class>Simulator</class>
    <extends>QGraphicsView</extends>
    <header>src.simulator</header>
+  </customwidget>
+  <customwidget>
+   <class>ClipboardTableView</class>
+   <extends>QTableView</extends>
+   <header location="global">src.clipboard_table_view</header>
   </customwidget>
  </customwidgets>
  <resources/>

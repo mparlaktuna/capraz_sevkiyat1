@@ -88,6 +88,7 @@ class GoodTableModel(QAbstractTableModel):
             return False
         return False
 
+
     def data(self, QModelIndex, int_role=None):
         if not QModelIndex.isValid() or not(0 < len(self.good_data)):
             return QVariant()
@@ -96,3 +97,4 @@ class GoodTableModel(QAbstractTableModel):
 
         else:
             return QVariant()
+

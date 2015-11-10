@@ -49,7 +49,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showing_result = []
         self.result_times = {}
 
-
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
         self.datasettable.setModel(self.data_set_model)

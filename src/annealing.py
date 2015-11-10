@@ -23,7 +23,7 @@ class Annealing(Algorithms):
             sequence.values['decision'] = 'better sequence'
             self.prev_sequence = copy.deepcopy(sequence)
             self.prev_sequence_error = sequence.error
-            if sequence.error < self.best_sequence.error:
+            if sequence.error <= self.best_sequence.error:
                 sequence.values['decision'] = 'best sequence'
                 self.best_sequence = copy.deepcopy(sequence)
                 self.best_iteration = iteration_number
