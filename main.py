@@ -527,7 +527,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def gams_output(self):
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')
         #try:
-        gams_writer(file_name, self.data_set_spin_box.value(), self.data)
+        gams_writer(file_name, self.data_set_spin_box.value() - 1, self.data)
         # except Exception as e:
         #     pass
 

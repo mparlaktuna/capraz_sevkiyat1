@@ -28,7 +28,7 @@ def gams_writer(file_name, data_set_number, data):
         truck_name = 'outbound' + str(i)
         outbound_arrivals.append(int(data.arrival_times[data_set_number][truck_name]))
         lower_boundaries.append(int(data.lower_boundaries[data_set_number][truck_name]))
-        upper_boundaries.append(int(data.lower_boundaries[data_set_number][truck_name]))
+        upper_boundaries.append(int(data.upper_boundaries[data_set_number][truck_name]))
 
     d = {'number_of_inbound': data.number_of_inbound_trucks + data.number_of_compound_trucks,
          'number_of_outbound': data.number_of_outbound_trucks + data.number_of_compound_trucks,
