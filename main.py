@@ -113,14 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         create connections from buttons to functions
         :return:
         """
-        self.numberOfDataSetsSpinBox.valueChanged.connect(self.set_data_set_table)
-        self.loadingTumeLineEdit.textChanged.connect(self.data.set_loading_time)
-        self.truckChangeoverTimeLineEdit.textChanged.connect(self.data.set_changeover_time)
-        self.effectOfTheArrivalTimesOnMakespanLineEdit.textChanged.connect(self.data.set_makespan_factor)
-        self.truckTransferTimeLineEdit.textChanged.connect(self.data.set_truck_transfer_time)
-        self.inboundArrivalTimeLineEdit.textChanged.connect(self.data.set_inbound_arrival_time)
-        self.outboundArrivalTimeLineEdit.textChanged.connect(self.data.set_outbound_arrival_time)
-        self.goodTransferTimeLineEdit.textChanged.connect(self.data.set_good_transfer_time)
+        self.value_connections()
 
         self.numberOfInboundTrucksSpinBox.valueChanged.connect(self.set_inbound_truck_number)
         self.numberOfOutboundTrucksSpinBox.valueChanged.connect(self.set_outbound_truck_number)
@@ -149,6 +142,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def new_data(self):
         self.data = DataStore()
         self.update_data_table()
+        self.value_connections()
+        self.setup_data()
+
+    def value_connections(self):
+        self.numberOfDataSetsSpinBox.valueChanged.connect(self.set_data_set_table)
+        self.loadingTumeLineEdit.textChanged.connect(self.data.set_loading_time)
+        self.truckChangeoverTimeLineEdit.textChanged.connect(self.data.set_changeover_time)
+        self.effectOfTheArrivalTimesOnMakespanLineEdit.textChanged.connect(self.data.set_makespan_factor)
+        self.truckTransferTimeLineEdit.textChanged.connect(self.data.set_truck_transfer_time)
+        self.inboundArrivalTimeLineEdit.textChanged.connect(self.data.set_inbound_arrival_time)
+        self.outboundArrivalTimeLineEdit.textChanged.connect(self.data.set_outbound_arrival_time)
+        self.goodTransferTimeLineEdit.textChanged.connect(self.data.set_good_transfer_time)
 
     def set_inbound_truck_number(self, value):
         self.inbound_table_model.truck_number(value)
@@ -233,6 +238,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         saves current data
         :return:
         """
+        self.graphicsView.data = self.data
+        self.setup_data()
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')
         try:
             pickle.dump(self.data,  open(file_name, 'wb'))
