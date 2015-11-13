@@ -49,19 +49,27 @@ class Tabu(Algorithms):
         new_sequence.values['iteration number'] = iteration_number
         new_sequence.coming_sequence = self.generate_random(self.prev_sequence.coming_sequence)
         new_sequence.going_sequence = self.generate_random(self.prev_sequence.going_sequence)
+        if self.same_generated(new_sequence):
+            self.next_iteration(iteration_number)
         self.generated_neighbour_list.append(new_sequence)
         return new_sequence
+
+    def same_generated(self, sequence):
+        for generated_sequence in self.generated_neighbour_list:
+            coming_same = sequence.coming_sequence == generated_sequence.coming_sequence
+            going_same = sequence.going_sequence == generated_sequence.going_sequence
+            same = coming_same and going_same
+            if same:
+                return True
+        return False
 
     def choose_sequence(self):
         selected_sequence = TabuSequence()
         sequence_decision = []
-        selected_index = 0
         for i, generated_sequence in enumerate(self.generated_neighbour_list):
             if generated_sequence.values['decision'] == 'tabu':
                 sequence_decision.append('tabu')
-                continue
-            if generated_sequence.error < selected_sequence.error:
-                selected_index = i
+            elif generated_sequence.error < selected_sequence.error:
                 selected_sequence = copy.deepcopy(generated_sequence)
                 selected_sequence.values['decision'] = 'selected sequence'
                 sequence_decision = len(sequence_decision) * ['not_chosen']
@@ -78,14 +86,19 @@ class Tabu(Algorithms):
         return sequence_decision
 
     def check_tabu(self, sequence):
-        tabu = False
-
         for past_sequence in self.prev_sequence_list:
             coming_tabu = sequence.coming_sequence == past_sequence.coming_sequence
             going_tabu = sequence.going_sequence == past_sequence.going_sequence
             tabu = coming_tabu and going_tabu
             if tabu:
                 print('tabu')
+                print('tabu sequence')
+                print(sequence.coming_sequence)
+                print(sequence.going_sequence)
+                print('past sequence')
+                print(past_sequence.coming_sequence)
+                print(past_sequence.going_sequence)
+
                 sequence.values['decision'] = 'tabu'
                 return True
 

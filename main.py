@@ -31,7 +31,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.data = DataStore()
-        self.data = pickle.load(open('deneme', 'rb'))
         self.truck_states = {}
         self.update_data_table()
         self.number_of_iterations = 100
