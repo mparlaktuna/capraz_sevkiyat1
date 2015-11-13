@@ -32,7 +32,7 @@ class OutboundTruck(Truck):
     def not_ready_to_load(self):
         self.good_amount = sum(self.needed_goods.values())
         self.next_state_time = self.good_amount * self.good.loading_time + self.current_time
-        if self.lower_Bound < self.next_state_time:
+        if self.lower_bound < self.next_state_time:
             self.next_state()
             self.current_door.next_state()
         elif self.next_state_time > self.upper_bound:
