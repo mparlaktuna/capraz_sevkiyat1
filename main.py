@@ -495,27 +495,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.truck_states = self.truck_states
 
     def show_results(self):
-        iteration_number = int(self.result_iteration_number_line_edit.text()) - 1
-        if iteration_number > len(self.showing_result):
-            self.result_iteration_number_line_edit.setText(str(len(self.showing_result)))
-            iteration_number = len(self.showing_result)
+        try:
+            iteration_number = int(self.result_iteration_number_line_edit.text()) - 1
+            if iteration_number > len(self.showing_result):
+                self.result_iteration_number_line_edit.setText(str(len(self.showing_result)))
+                iteration_number = len(self.showing_result)
 
-        result_sequence_model = ResultSequenceTableModel(self.showing_result[iteration_number], self.data)
-        self.sequence_table.setModel(result_sequence_model)
+            result_sequence_model = ResultSequenceTableModel(self.showing_result[iteration_number], self.data)
+            self.sequence_table.setModel(result_sequence_model)
 
-        result_good_model = ResultGoodTableModel(self.showing_result[iteration_number], self.data)
-        self.good_in_out_table.setModel(result_good_model)
-        self.good_in_out_table.resizeColumnsToContents()
-        self.good_in_out_table.resizeRowsToContents()
+            result_good_model = ResultGoodTableModel(self.showing_result[iteration_number], self.data)
+            self.good_in_out_table.setModel(result_good_model)
+            self.good_in_out_table.resizeColumnsToContents()
+            self.good_in_out_table.resizeRowsToContents()
 
-        inbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_inbound_trucks, 'inbound')
-        self.inbound_time_table.setModel(inbound_time_model)
+            inbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_inbound_trucks, 'inbound')
+            self.inbound_time_table.setModel(inbound_time_model)
 
-        outbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_outbound_trucks, 'outbound')
-        self.outbound_time_table.setModel(outbound_time_model)
+            outbound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_outbound_trucks, 'outbound')
+            self.outbound_time_table.setModel(outbound_time_model)
 
-        compound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_compound_trucks, 'compound')
-        self.compound_time_table.setModel(compound_time_model)
+            compound_time_model = ResultTimeTableModel(self.showing_result[iteration_number], self.data.number_of_compound_trucks, 'compound')
+            self.compound_time_table.setModel(compound_time_model)
+        except:
+            pass
 
     def change_result_name(self, name):
         self.solution_name = name
