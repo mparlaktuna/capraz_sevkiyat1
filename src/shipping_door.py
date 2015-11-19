@@ -49,6 +49,16 @@ class ShippingDoor(Door):
         self.check_self()
         self.transfer_goods(self.station)
         self.check_ready()
+        if self.check_other_trucks():
+            self.next_state()
+            self.truck.next_state()
+
+    def check_other_trucks(self):
+        for i, truck in enumerate(self.truck_list):
+            if i >= self.next_truck_number:
+                if truck.upper_bound < self.current_time:
+                    return True
+        return False
 
     def must_load(self):
         self.critic = True
