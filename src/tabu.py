@@ -51,7 +51,8 @@ class Tabu(Algorithms):
         new_sequence.going_sequence = self.generate_random(self.prev_sequence.going_sequence)
         if self.same_generated(new_sequence):
             self.next_iteration(iteration_number)
-        self.generated_neighbour_list.append(new_sequence)
+        else:
+            self.generated_neighbour_list.append(new_sequence)
         return new_sequence
 
     def same_generated(self, sequence):
@@ -67,19 +68,20 @@ class Tabu(Algorithms):
         selected_sequence = TabuSequence()
         sequence_decision = []
         for i, generated_sequence in enumerate(self.generated_neighbour_list):
-            if generated_sequence.values['decision'] == 'tabu':
-                sequence_decision.append('tabu')
-            elif generated_sequence.error < selected_sequence.error:
-                selected_sequence = copy.deepcopy(generated_sequence)
-                selected_sequence.values['decision'] = 'selected sequence'
-                sequence_decision = len(sequence_decision) * ['not_chosen']
-                sequence_decision.append('selected sequence')
+            if not generated_sequence.values['decision'] == 'tabu':
+                if generated_sequence.error <= self.best_sequence.error:
+                    self.best_sequence = copy.deepcopy(generated_sequence)
+                    sequence_decision.append('best sequence')
+                elif generated_sequence.error < selected_sequence.error:
+                    selected_sequence = copy.deepcopy(generated_sequence)
+                    selected_sequence.values['decision'] = 'selected sequence'
+                    sequence_decision.append('selected sequence')
+                else:
+                    sequence_decision.append('not_chosen')
             else:
-                sequence_decision.append('not_chosen')
+                sequence_decision.append('tabu')
 
-        if selected_sequence.error < self.best_sequence.error:
-            self.best_sequence = copy.deepcopy(selected_sequence)
-            sequence_decision[i] = 'best sequence'
+
         self.prev_sequence_list.append(selected_sequence)
         self.generated_neighbour_list = []
         print('decision', sequence_decision)
