@@ -64,7 +64,7 @@ class ShippingDoor(Door):
         self.critic = True
         self.check_self()
         self.transfer_goods(self.station)
-        self.critic_transfer_goods()
+        #self.critic_transfer_goods()
         self.check_ready()
 
     def loading(self):
@@ -87,7 +87,6 @@ class ShippingDoor(Door):
             if not self.good_ready:
                 for good_name, good_amount in self.transfer_amounts.items():
                     remove_goods = transfor_from.goods_list.remove_good(good_name, good_amount)
-
                     for remove_good in remove_goods:
                         self.goods.add_good(good_name, remove_good[0], remove_good[1])
         except:

@@ -81,7 +81,6 @@ class Tabu(Algorithms):
             else:
                 sequence_decision.append('tabu')
 
-
         self.prev_sequence_list.append(selected_sequence)
         self.generated_neighbour_list = []
         print('decision', sequence_decision)
