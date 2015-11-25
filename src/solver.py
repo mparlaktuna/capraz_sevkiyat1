@@ -111,7 +111,6 @@ class Solver(QThread):
                 self.check_finish()
 
     def step(self):
-        self.current_time += 1
         self.time_signal.emit(self.current_time)
         for truck in self.truck_list.values():
             signal = truck.run(self.current_time)
@@ -120,6 +119,8 @@ class Solver(QThread):
 
         for door in self.door_list.values():
             door.run(self.current_time)
+        self.current_time += 1
+
 
     def time_step_change(self, value):
         try:
