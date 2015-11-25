@@ -105,8 +105,8 @@ class Solver(QThread):
     def run(self):
         while self.not_finished:
             if not self.pause:
-                if self.time_step:
-                    time.sleep(self.time_constant)
+                # if self.time_step:
+                #     time.sleep(self.time_constant)
                 self.step()
                 self.check_finish()
 
@@ -120,7 +120,6 @@ class Solver(QThread):
         for door in self.door_list.values():
             door.run(self.current_time)
         self.current_time += 1
-
 
     def time_step_change(self, value):
         try:

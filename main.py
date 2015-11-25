@@ -296,6 +296,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data.update_truck_numbers()
 
     def solve_data_set(self):
+        self.start_time = time.time()
+
         self.annealing = Annealing(self.data, int(self.tempereature_line_edit.text()), float(self.decav_factor_line_edit.text()))
         self.tabu = Tabu(self.data, int(self.number_of_tabu_line_edit.text()), int(self.number_of_tabu_neighbours_line_edit.text()))
         self.algorithms = {'annealing': self.annealing, 'tabu': self.tabu}
@@ -307,56 +309,62 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.iteration_number = 0
         self.number_of_iterations = int(self.numberOfIterationsLineEdit.text())
         self.setup_truck_names()
-        self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number + 1, self.solverComboBox.currentText(), len(self.results) + 1)
-        self.results[self.solution_name] = []
-        self.result_names_combo_box.addItem(self.solution_name)
 
-        self.coming_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 0, self.data)
-        self.coming_sequence_table.setModel(self.coming_sequence_table_model)
+        self.slow_solution = not self.fast_solve_check_box.isChecked()
 
-        self.going_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 1, self.data)
-        self.going_sequence_table.setModel(self.going_sequence_table_model)
+        if self.slow_solution:
+            self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number + 1, self.solverComboBox.currentText(), len(self.results) + 1)
+            self.results[self.solution_name] = []
+            self.result_names_combo_box.addItem(self.solution_name)
 
-        if self.algorithm_name == 'annealing':
-            self.error_sequence_table_model = AnnealingErrorTableModel(self.results[self.solution_name], self.data)
-            self.sequence_error_table.setModel(self.error_sequence_table_model)
+            self.coming_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 0, self.data)
+            self.coming_sequence_table.setModel(self.coming_sequence_table_model)
 
-        elif self.algorithm_name == 'tabu':
-            self.error_sequence_table_model = TabuErrorTableModel(self.results[self.solution_name], self.data)
-            self.sequence_error_table.setModel(self.error_sequence_table_model)
+            self.going_sequence_table_model = SequenceTableModel(self.results[self.solution_name], 1, self.data)
+            self.going_sequence_table.setModel(self.going_sequence_table_model)
+
+            if self.algorithm_name == 'annealing':
+                self.error_sequence_table_model = AnnealingErrorTableModel(self.results[self.solution_name], self.data)
+                self.sequence_error_table.setModel(self.error_sequence_table_model)
+
+            elif self.algorithm_name == 'tabu':
+                self.error_sequence_table_model = TabuErrorTableModel(self.results[self.solution_name], self.data)
+                self.sequence_error_table.setModel(self.error_sequence_table_model)
 
         self.next_iteration()
 
     def save_results(self):
-        self.current_result_data = ResultData(self.data)
-        self.current_result_data.times = copy.deepcopy(self.result_times)
-        self.sequence.error = self.calculate_error()
-        self.current_result_data.sequence = copy.deepcopy(self.sequence)
-        self.current_result_data.goods = self.solver.return_goods()
-        self.result_times = {}
-        self.results[self.solution_name].append(self.current_result_data)
-        self.coming_sequence_table_model.insertRows(0, 0)
-        self.going_sequence_table_model.insertRows(0, 0)
-        self.error_sequence_table_model.insertRows(0, 0)
+        if self.slow_solution:
+            self.current_result_data = ResultData(self.data)
+            self.current_result_data.times = copy.deepcopy(self.result_times)
+            self.sequence.error = self.calculate_error()
+            self.current_result_data.sequence = copy.deepcopy(self.sequence)
+            self.current_result_data.goods = self.solver.return_goods()
+            self.result_times = {}
+            self.results[self.solution_name].append(self.current_result_data)
+            self.coming_sequence_table_model.insertRows(0, 0)
+            self.going_sequence_table_model.insertRows(0, 0)
+            self.error_sequence_table_model.insertRows(0, 0)
 
     def save_tabu_results(self):
-        self.current_result_data = ResultData(self.data)
-        self.current_result_data.times = {}
-        self.sequence.error = float('inf')
-        self.current_result_data.sequence = copy.deepcopy(self.sequence)
-        self.current_result_data.goods = {}
-        self.result_times = {}
-        self.results[self.solution_name].append(self.current_result_data)
-        self.coming_sequence_table_model.insertRows(0, 0)
-        self.going_sequence_table_model.insertRows(0, 0)
-        self.error_sequence_table_model.insertRows(0, 0)
+        if self.slow_solution:
+            self.current_result_data = ResultData(self.data)
+            self.current_result_data.times = {}
+            self.sequence.error = float('inf')
+            self.current_result_data.sequence = copy.deepcopy(self.sequence)
+            self.current_result_data.goods = {}
+            self.result_times = {}
+            self.results[self.solution_name].append(self.current_result_data)
+            self.coming_sequence_table_model.insertRows(0, 0)
+            self.going_sequence_table_model.insertRows(0, 0)
+            self.error_sequence_table_model.insertRows(0, 0)
 
     def next_iteration(self):
         self.solver = Solver(self.data_set_number, self.data)
         self.solver.done_signal.connect(self.iteration_end)
         self.solver.value_signal.connect(self.time_saver)
-
         if self.iteration_number == 0:
+
             self.sequence = copy.deepcopy(self.algorithm.start1())
             self.iteration_number += 1
             self.solver.set_sequence(self.sequence)
@@ -364,20 +372,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         elif self.iteration_number < self.number_of_iterations + 1:
             if self.algorithm_name == 'annealing':
+
                 new_sequence = self.algorithm.next_iteration(self.sequence, self.iteration_number)
-                self.current_result_data.sequence = copy.deepcopy(self.sequence)
+                if self.slow_solution:
+                    self.current_result_data.sequence = copy.deepcopy(self.sequence)
                 self.iteration_number += 1
                 self.sequence = new_sequence
                 self.solver.set_sequence(self.sequence)
                 self.solver.solve()
+
             elif self.algorithm_name == 'tabu':
-#                print(self.algorithm.generated_neighbour_number)
                 if self.algorithm.generated_neighbour_number == self.algorithm.number_of_neighbours:
                     self.algorithm.generated_neighbour_number = 0
-                    decision_list = self.algorithm.choose_sequence()
-                    for i, decision in enumerate(decision_list):
-                        self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
-                    self.iteration_number += 1
+                    if self.slow_solution:
+                        decision_list = self.algorithm.choose_sequence()
+                        for i, decision in enumerate(decision_list):
+                            self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
+                        self.iteration_number += 1
                     self.next_iteration()
                 else:
                     new_sequence = self.algorithm.next_iteration(self.iteration_number)
@@ -391,6 +402,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.solver.solve()
 
         elif self.iteration_number == self.number_of_iterations + 1:
+            self.end_time = time.time()
+            self.solution_time = self.end_time - self.start_time
+            #print(self.solution_time)
+            self.solution_time_label.setText(str(int(self.solution_time)))
             # print(self.algorithm.best_sequence.coming_sequence)
             # print(self.algorithm.best_sequence.going_sequence)
             # print(self.algorithm.best_sequence.error)
@@ -418,15 +433,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for truck in self.solver.truck_list.values():
             if truck.truck_name in self.data.going_truck_name_list:
                 if truck.behaviour_list[truck.current_state] == 'done':
-                    self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+
                     if truck.finish_time > truck.upper_bound:
                         error = truck.finish_time - truck.upper_bound
                     elif truck.finish_time < truck.lower_bound:
                         error = truck.lower_bound - truck.finish_time
                     else:
                         error = 0
-                    self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
-                    self.current_result_data.times[truck.truck_name].append(['error', error])
+                    if self.slow_solution:
+                        self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+                        self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+                        self.current_result_data.times[truck.truck_name].append(['error', error])
                     total_error += error
         return total_error
 
@@ -467,10 +484,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.update_scene()
 
     def time_saver(self, time, name, state, arg):
-        if name in self.result_times.keys():
-            self.result_times[name].append([state, time])
-        else:
-            self.result_times[name] = [[state, time]]
+        if self.slow_solution:
+            if name in self.result_times.keys():
+                self.result_times[name].append([state, time])
+            else:
+                self.result_times[name] = [[state, time]]
 
     def pause(self):
         try:

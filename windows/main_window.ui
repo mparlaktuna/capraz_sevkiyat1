@@ -27,7 +27,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
@@ -399,6 +399,27 @@
            <widget class="QLineEdit" name="numberOfIterationsLineEdit">
             <property name="text">
              <string>100</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="fast_solve_check_box">
+            <property name="text">
+             <string>Fasl Solve</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Solution Time: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="solution_time_label">
+            <property name="text">
+             <string>0</string>
             </property>
            </widget>
           </item>
