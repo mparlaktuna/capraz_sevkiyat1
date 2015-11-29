@@ -103,6 +103,7 @@ class Solver(QThread):
         self.start()
 
     def run(self):
+        self.start_time = time.time()
         while self.not_finished:
             if not self.pause:
                 # if self.time_step:
@@ -135,6 +136,9 @@ class Solver(QThread):
         for truck in self.truck_list.values():
             finished = finished and (truck.behaviour_list[truck.current_state] == 'done')
         if finished:
+            self.finish_time = time.time()
+            print('iteration finish time', self.finish_time - self.start_time)
+            print('current time', self.current_time)
             self.not_finished = False
             self.done_signal.emit(self.current_time)
 

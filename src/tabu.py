@@ -45,13 +45,16 @@ class Tabu(Algorithms):
         return self.sequence
 
     def next_iteration(self, iteration_number):
+        print('next iteration')
         new_sequence = TabuSequence()
         new_sequence.values['iteration number'] = iteration_number
         new_sequence.coming_sequence = self.generate_random(self.prev_sequence.coming_sequence)
         new_sequence.going_sequence = self.generate_random(self.prev_sequence.going_sequence)
         if self.same_generated(new_sequence):
+            print('same')
             self.next_iteration(iteration_number)
         else:
+            print('diff')
             self.generated_neighbour_list.append(new_sequence)
         return new_sequence
 

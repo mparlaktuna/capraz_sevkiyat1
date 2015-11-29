@@ -335,6 +335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.next_iteration()
 
     def save_results(self):
+
         if self.slow_solution:
             self.current_result_data = ResultData(self.data)
             self.current_result_data.times = copy.deepcopy(self.result_times)
@@ -361,92 +362,110 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.error_sequence_table_model.insertRows(0, 0)
 
     def next_iteration(self):
-        self.solver = Solver(self.data_set_number, self.data)
-        self.solver.done_signal.connect(self.iteration_end)
-        self.solver.value_signal.connect(self.time_saver)
-        if self.iteration_number == 0:
+        print('next')
+        try:
+            self.solver = Solver(self.data_set_number, self.data)
+            self.solver.done_signal.connect(self.iteration_end)
+            self.solver.value_signal.connect(self.time_saver)
+            print(self.iteration_number)
+            if self.iteration_number == 0:
 
-            self.sequence = copy.deepcopy(self.algorithm.start1())
-            self.iteration_number += 1
-            self.solver.set_sequence(self.sequence)
-            self.solver.solve()
-
-        elif self.iteration_number < self.number_of_iterations + 1:
-            if self.algorithm_name == 'annealing':
-
-                new_sequence = self.algorithm.next_iteration(self.sequence, self.iteration_number)
-                if self.slow_solution:
-                    self.current_result_data.sequence = copy.deepcopy(self.sequence)
+                self.sequence = copy.deepcopy(self.algorithm.start1())
                 self.iteration_number += 1
-                self.sequence = new_sequence
                 self.solver.set_sequence(self.sequence)
                 self.solver.solve()
 
-            elif self.algorithm_name == 'tabu':
-                if self.algorithm.generated_neighbour_number == self.algorithm.number_of_neighbours:
-                    self.algorithm.generated_neighbour_number = 0
+            elif self.iteration_number < self.number_of_iterations + 1:
+                if self.algorithm_name == 'annealing':
+
+                    new_sequence = self.algorithm.next_iteration(self.sequence, self.iteration_number)
                     if self.slow_solution:
-                        decision_list = self.algorithm.choose_sequence()
-                        for i, decision in enumerate(decision_list):
-                            self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
-                        self.iteration_number += 1
-                    self.next_iteration()
-                else:
-                    new_sequence = self.algorithm.next_iteration(self.iteration_number)
+                        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+                    self.iteration_number += 1
                     self.sequence = new_sequence
-                    self.algorithm.generated_neighbour_number += 1
-                    if self.algorithm.check_tabu(self.sequence):
-                        self.save_tabu_results()
+                    self.solver.set_sequence(self.sequence)
+                    self.solver.solve()
+
+                elif self.algorithm_name == 'tabu':
+                    print('tabu')
+                    if self.algorithm.generated_neighbour_number == self.algorithm.number_of_neighbours:
+                        print('if')
+                        self.algorithm.generated_neighbour_number = 0
+                        decision_list = self.algorithm.choose_sequence()
+                        if self.slow_solution:
+                            for i, decision in enumerate(decision_list):
+                                self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
+                        self.iteration_number += 1
                         self.next_iteration()
                     else:
-                        self.solver.set_sequence(self.sequence)
-                        self.solver.solve()
+                        print('else')
+                        new_sequence = self.algorithm.next_iteration(self.iteration_number)
+                        print('deneme')
+                        self.sequence = copy.deepcopy(new_sequence)
+                        self.algorithm.generated_neighbour_number += 1
+                        if self.algorithm.check_tabu(self.sequence):
+                            print('elseif')
+                            self.save_tabu_results()
+                            self.next_iteration()
+                        else:
+                            print('elseelse')
+                            self.solver.set_sequence(self.sequence)
+                            self.solver.solve()
 
-        elif self.iteration_number == self.number_of_iterations + 1:
-            self.end_time = time.time()
-            self.solution_time = self.end_time - self.start_time
-            #print(self.solution_time)
-            self.solution_time_label.setText(str(int(self.solution_time)))
-            # print(self.algorithm.best_sequence.coming_sequence)
-            # print(self.algorithm.best_sequence.going_sequence)
-            # print(self.algorithm.best_sequence.error)
-            self.stop()
+            elif self.iteration_number == self.number_of_iterations + 1:
+                self.end_time = time.time()
+                self.solution_time = self.end_time - self.start_time
+                self.solution_time_label.setText(str(int(self.solution_time)))
+                self.stop()
+        except:
+            pass
+
+    def check_iteration_finish(self):
+        pass
 
     def iteration_end(self):
-        self.save_results()
-        if self.algorithm_name == 'annealing':
-            self.solver.not_finished = False
-            self.solver.quit()
-            self.solver.done_signal.disconnect()
-
-        elif self.algorithm_name == 'tabu':
-            if self.algorithm.iteration_finish:
-                self.algorithm.iteration_finish = False
-            else:
+        print('end')
+        try:
+            self.save_results()
+            if self.algorithm_name == 'annealing':
                 self.solver.not_finished = False
                 self.solver.quit()
                 self.solver.done_signal.disconnect()
 
-        self.next_iteration()
+            elif self.algorithm_name == 'tabu':
+                if self.algorithm.iteration_finish:
+                    self.algorithm.iteration_finish = False
+                else:
+                    self.solver.not_finished = False
+                    self.solver.quit()
+                    self.solver.done_signal.disconnect()
+
+            self.next_iteration()
+        except:
+            self.next_iteration()
 
     def calculate_error(self):
-        total_error = 0
-        for truck in self.solver.truck_list.values():
-            if truck.truck_name in self.data.going_truck_name_list:
-                if truck.behaviour_list[truck.current_state] == 'done':
+        print('calculates')
+        try:
+            total_error = 0
+            for truck in self.solver.truck_list.values():
+                if truck.truck_name in self.data.going_truck_name_list:
+                    if truck.behaviour_list[truck.current_state] == 'done':
 
-                    if truck.finish_time > truck.upper_bound:
-                        error = truck.finish_time - truck.upper_bound
-                    elif truck.finish_time < truck.lower_bound:
-                        error = truck.lower_bound - truck.finish_time
-                    else:
-                        error = 0
-                    if self.slow_solution:
-                        self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
-                        self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
-                        self.current_result_data.times[truck.truck_name].append(['error', error])
-                    total_error += error
-        return total_error
+                        if truck.finish_time > truck.upper_bound:
+                            error = truck.finish_time - truck.upper_bound
+                        elif truck.finish_time < truck.lower_bound:
+                            error = truck.lower_bound - truck.finish_time
+                        else:
+                            error = 0
+                        if self.slow_solution:
+                            self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+                            self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+                            self.current_result_data.times[truck.truck_name].append(['error', error])
+                        total_error += error
+            return total_error
+        except:
+            return float('inf')
 
     def stop(self):
         print('stop')
@@ -485,11 +504,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.update_scene()
 
     def time_saver(self, time, name, state, arg):
-        if self.slow_solution:
-            if name in self.result_times.keys():
-                self.result_times[name].append([state, time])
-            else:
-                self.result_times[name] = [[state, time]]
+        try:
+            if self.slow_solution:
+                if name in self.result_times.keys():
+                    self.result_times[name].append([state, time])
+                else:
+                    self.result_times[name] = [[state, time]]
+        except:
+            pass
 
     def pause(self):
         try:
