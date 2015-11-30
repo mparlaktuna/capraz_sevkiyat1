@@ -70,8 +70,10 @@ class Tabu(Algorithms):
     def choose_sequence(self):
         selected_sequence = TabuSequence()
         sequence_decision = []
+
         for i, generated_sequence in enumerate(self.generated_neighbour_list):
             if not generated_sequence.values['decision'] == 'tabu':
+                print('neighbour error', generated_sequence.error)
                 if generated_sequence.error <= self.best_sequence.error:
                     self.best_sequence = copy.deepcopy(generated_sequence)
                     sequence_decision.append('best sequence')

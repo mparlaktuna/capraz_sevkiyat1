@@ -97,6 +97,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.data.upper_boundaries[k][name] = int(A * data_set[1])
         self.load_generated_data()
 
+    def new_generate_times(self):
+        self.data.arrival_times = []
+        self.data.lower_boundaries = []
+        self.data.upper_boundaries = []
+        for k, data_set in enumerate(self.data.data_sets):
+            self.data.arrival_times.append({})
+            self.data.lower_boundaries.append({})
+            self.data.upper_boundaries.append({})
+
+            self.data.calculate_truck_related_data()
+            for i in range(self.data.number_of_inbound_trucks):
+                name = 'inbound' + str(i)
+                two_gdj = self.calculate_2dgj(data_set[2], self.data.coming_mu, self.data.product_per_coming_truck)
+                self.data.arrival_times[k][name] = int(uniform(self.data.inbound_arrival_time, two_gdj))
+
+            for i in range(self.data.number_of_outbound_trucks):
+                name = 'outbound' + str(i)
+                two_gdj = self.calculate_2dgj(data_set[2], self.data.going_mu, self.data.product_per_going_truck)
+                gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
+                self.data.arrival_times[k][name] = gdj
+                A = gdj + self.data.product_per_going_truck * self.data.loading_time + self.data.changeover_time
+                self.data.lower_boundaries[k][name] = int(A * data_set[0])
+                self.data.upper_boundaries[k][name] = int(A * data_set[1])
+
+            for i in range(self.data.number_of_compound_trucks):
+                name = 'compound' + str(i)
+                two_gdj = self.calculate_2dgj(data_set[2], self.data.coming_mu, self.data.product_per_coming_truck)
+                gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
+                self.data.arrival_times[k][name] = gdj
+                A = gdj + self.data.product_per_going_truck * self.data.loading_time + self.data.changeover_time
+                self.data.lower_boundaries[k][name] = int(A * data_set[0])
+                self.data.upper_boundaries[k][name] = int(A * data_set[1])
+        self.load_generated_data()
+
     def load_generated_data(self):
         self.arrival_time_table_model = TimeTableModel(self.data.arrival_times)
         self.arrival_time_table.setModel(self.arrival_time_table_model)
@@ -134,6 +168,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pause_button.clicked.connect(self.pause)
         self.resume_button.clicked.connect(self.resume)
         self.generate_times_button.clicked.connect(self.generate_times)
+        self.generate_new_boundaries_button.clicked.connect(self.new_generate_times)
         self.stop_button.clicked.connect(self.finished)
 
         self.result_names_combo_box.currentTextChanged.connect(self.change_result_name)
@@ -335,31 +370,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.next_iteration()
 
     def save_results(self):
-
-        if self.slow_solution:
-            self.current_result_data = ResultData(self.data)
-            self.current_result_data.times = copy.deepcopy(self.result_times)
-            self.sequence.error = self.calculate_error()
-            self.current_result_data.sequence = copy.deepcopy(self.sequence)
-            self.current_result_data.goods = self.solver.return_goods()
-            self.result_times = {}
-            self.results[self.solution_name].append(self.current_result_data)
-            self.coming_sequence_table_model.insertRows(0, 0)
-            self.going_sequence_table_model.insertRows(0, 0)
-            self.error_sequence_table_model.insertRows(0, 0)
+        self.current_result_data = ResultData(self.data)
+        self.current_result_data.times = copy.deepcopy(self.result_times)
+        self.sequence.error = self.calculate_error()
+        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+        self.current_result_data.goods = self.solver.return_goods()
+        self.result_times = {}
+        self.results[self.solution_name].append(self.current_result_data)
+        self.coming_sequence_table_model.insertRows(0, 0)
+        self.going_sequence_table_model.insertRows(0, 0)
+        self.error_sequence_table_model.insertRows(0, 0)
 
     def save_tabu_results(self):
-        if self.slow_solution:
-            self.current_result_data = ResultData(self.data)
-            self.current_result_data.times = {}
-            self.sequence.error = float('inf')
-            self.current_result_data.sequence = copy.deepcopy(self.sequence)
-            self.current_result_data.goods = {}
-            self.result_times = {}
-            self.results[self.solution_name].append(self.current_result_data)
-            self.coming_sequence_table_model.insertRows(0, 0)
-            self.going_sequence_table_model.insertRows(0, 0)
-            self.error_sequence_table_model.insertRows(0, 0)
+        self.current_result_data = ResultData(self.data)
+        self.current_result_data.times = {}
+        self.sequence.error = float('inf')
+        self.current_result_data.sequence = copy.deepcopy(self.sequence)
+        self.current_result_data.goods = {}
+        self.result_times = {}
+        self.results[self.solution_name].append(self.current_result_data)
+        self.coming_sequence_table_model.insertRows(0, 0)
+        self.going_sequence_table_model.insertRows(0, 0)
+        self.error_sequence_table_model.insertRows(0, 0)
 
     def next_iteration(self):
         print('next')
@@ -392,23 +424,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         print('if')
                         self.algorithm.generated_neighbour_number = 0
                         decision_list = self.algorithm.choose_sequence()
-                        if self.slow_solution:
-                            for i, decision in enumerate(decision_list):
-                                self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
+                        #if self.slow_solution:
+                        for i, decision in enumerate(decision_list):
+                            self.results[self.solution_name][-len(decision_list) + i].sequence.values['decision'] = decision
                         self.iteration_number += 1
                         self.next_iteration()
                     else:
-                        print('else')
                         new_sequence = self.algorithm.next_iteration(self.iteration_number)
-                        print('deneme')
-                        self.sequence = copy.deepcopy(new_sequence)
+                        self.sequence = new_sequence
                         self.algorithm.generated_neighbour_number += 1
                         if self.algorithm.check_tabu(self.sequence):
-                            print('elseif')
                             self.save_tabu_results()
                             self.next_iteration()
                         else:
-                            print('elseelse')
                             self.solver.set_sequence(self.sequence)
                             self.solver.solve()
 
@@ -445,27 +473,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.next_iteration()
 
     def calculate_error(self):
-        print('calculates')
-        try:
-            total_error = 0
-            for truck in self.solver.truck_list.values():
-                if truck.truck_name in self.data.going_truck_name_list:
-                    if truck.behaviour_list[truck.current_state] == 'done':
+        total_error = 0
+        for truck in self.solver.truck_list.values():
+            if truck.truck_name in self.data.going_truck_name_list:
+                if truck.behaviour_list[truck.current_state] == 'done':
 
-                        if truck.finish_time > truck.upper_bound:
-                            error = truck.finish_time - truck.upper_bound
-                        elif truck.finish_time < truck.lower_bound:
-                            error = truck.lower_bound - truck.finish_time
-                        else:
-                            error = 0
-                        if self.slow_solution:
-                            self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
-                            self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
-                            self.current_result_data.times[truck.truck_name].append(['error', error])
-                        total_error += error
-            return total_error
-        except:
-            return float('inf')
+                    if truck.finish_time > truck.upper_bound:
+                        error = truck.finish_time - truck.upper_bound
+                    elif truck.finish_time < truck.lower_bound:
+                        error = truck.lower_bound - truck.finish_time
+                    else:
+                        error = 0
+                    if self.slow_solution:
+                        self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+                        self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+                        self.current_result_data.times[truck.truck_name].append(['error', error])
+                    total_error += error
+        return total_error
 
     def stop(self):
         print('stop')
