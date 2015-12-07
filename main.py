@@ -91,8 +91,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 two_gdj = self.calculate_2dgj(data_set[2], self.data.coming_mu, self.data.product_per_coming_truck)
                 gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
                 self.data.arrival_times[k][name] = gdj
-                A = gdj + (self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
-                #A = gdj + (self.data.coming_mu - 1) * self.data.changeover_time + self.data.coming_mu * self.data.product_per_coming_truck * self.data.loading_time + self.data.changeover_time + self.data.truck_transfer_time +(self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
+                #A = gdj + (self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
+                A = gdj + (self.data.coming_mu - 1) * self.data.changeover_time + self.data.coming_mu * self.data.product_per_coming_truck * self.data.loading_time + self.data.changeover_time + self.data.truck_transfer_time +(self.data.going_mu - 1) * self.data.changeover_time + self.data.going_mu * self.data.product_per_going_truck * self.data.loading_time
                 self.data.lower_boundaries[k][name] = int(A * data_set[0])
                 self.data.upper_boundaries[k][name] = int(A * data_set[1])
         self.load_generated_data()
@@ -117,7 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 two_gdj = self.calculate_2dgj(data_set[2], self.data.going_mu, self.data.product_per_going_truck)
                 gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
                 self.data.arrival_times[k][name] = gdj
-                A = gdj + self.data.product_per_going_truck * self.data.loading_time + self.data.changeover_time
+                A = self.data.product_per_coming_truck * self.data.unloading_time + gdj + self.data.product_per_going_truck * self.data.loading_time
                 self.data.lower_boundaries[k][name] = int(A * data_set[0])
                 self.data.upper_boundaries[k][name] = int(A * data_set[1])
 
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 two_gdj = self.calculate_2dgj(data_set[2], self.data.coming_mu, self.data.product_per_coming_truck)
                 gdj = int(uniform(self.data.outbound_arrival_time, two_gdj))
                 self.data.arrival_times[k][name] = gdj
-                A = gdj + self.data.product_per_going_truck * self.data.loading_time + self.data.changeover_time
+                A = self.data.product_per_coming_truck * self.data.unloading_time + gdj + self.data.product_per_going_truck * self.data.loading_time
                 self.data.lower_boundaries[k][name] = int(A * data_set[0])
                 self.data.upper_boundaries[k][name] = int(A * data_set[1])
         self.load_generated_data()
@@ -183,6 +183,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def value_connections(self):
         self.numberOfDataSetsSpinBox.valueChanged.connect(self.set_data_set_table)
         self.loadingTumeLineEdit.textChanged.connect(self.data.set_loading_time)
+        self.unloading_time_edit.textChanged.connect(self.data.set_unloading_time)
         self.truckChangeoverTimeLineEdit.textChanged.connect(self.data.set_changeover_time)
         self.effectOfTheArrivalTimesOnMakespanLineEdit.textChanged.connect(self.data.set_makespan_factor)
         self.truckTransferTimeLineEdit.textChanged.connect(self.data.set_truck_transfer_time)
@@ -225,6 +226,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         self.loadingTumeLineEdit.setText(str(self.data.loading_time))
+        try:
+            self.unloading_time_edit.setText(str(self.data.unloading_time))
+        except:
+            self.unloading_time_edit.setText(str(0))
+            self.data.unloading_time = 0
         self.truckChangeoverTimeLineEdit.setText(str(self.data.changeover_time))
         self.effectOfTheArrivalTimesOnMakespanLineEdit.setText(str(self.data.makespan_factor))
         self.truckTransferTimeLineEdit.setText(str(self.data.truck_transfer_time))
@@ -267,6 +273,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_data()
         self.update_data_table()
         self.load_generated_data()
+        self.value_connections()
 
     def save_data(self):
         """

@@ -10,6 +10,7 @@ class DataStore(object):
         self.coming_truck_name_list = []
         self.going_truck_name_list = []
         self.loading_time = 0
+        self.unloading_time = 0
         self.changeover_time = 0
         self.makespan_factor = 0
         self.truck_transfer_time = 0
@@ -69,6 +70,12 @@ class DataStore(object):
     def set_loading_time(self, value):
         try:
             self.loading_time = int(value)
+        except:
+            pass
+
+    def set_unloading_time(self, value):
+        try:
+            self.unloading_time = int(value)
         except:
             pass
 
