@@ -76,6 +76,7 @@ class Tabu(Algorithms):
                 print('neighbour error', generated_sequence.error)
                 if generated_sequence.error <= self.best_sequence.error:
                     self.best_sequence = copy.deepcopy(generated_sequence)
+                    selected_sequence = copy.deepcopy(self.best_sequence)
                     sequence_decision.append('best sequence')
                 elif generated_sequence.error < selected_sequence.error:
                     selected_sequence = copy.deepcopy(generated_sequence)
@@ -87,9 +88,11 @@ class Tabu(Algorithms):
                 sequence_decision.append('tabu')
 
         self.prev_sequence_list.append(selected_sequence)
+        self.prev_sequence = selected_sequence
         self.generated_neighbour_list = []
         print('decision', sequence_decision)
         return sequence_decision
+
 
     def check_tabu(self, sequence):
         for past_sequence in self.prev_sequence_list:
@@ -97,11 +100,10 @@ class Tabu(Algorithms):
             going_tabu = sequence.going_sequence == past_sequence.going_sequence
             tabu = coming_tabu and going_tabu
             if tabu:
-                print('tabu')
-                print('tabu sequence')
+
                 print(sequence.coming_sequence)
                 print(sequence.going_sequence)
-                print('past sequence')
+
                 print(past_sequence.coming_sequence)
                 print(past_sequence.going_sequence)
 
