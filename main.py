@@ -487,15 +487,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                     if truck.finish_time > truck.upper_bound:
                         error = truck.finish_time - truck.upper_bound
+
+                        print('positive error')
                     elif truck.finish_time < truck.lower_bound:
-                        error = truck.lower_bound - truck.finish_time
+                        error = truck.finish_time - truck.lower_bound
+                        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!negative error')
+                        print(error)
                     else:
                         error = 0
                     if self.slow_solution:
                         self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
                         self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
                         self.current_result_data.times[truck.truck_name].append(['error', error])
-                    total_error += error
+                    total_error += abs(error)
         return total_error
 
     def stop(self):
