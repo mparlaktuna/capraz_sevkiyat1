@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.5
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -284,6 +284,17 @@ class Ui_MainWindow(object):
         self.gridLayout_8.addLayout(self.horizontalLayout_3, 0, 0, 1, 1)
         self.stackedWidget.addWidget(self.page_2)
         self.horizontalLayout_4.addWidget(self.stackedWidget)
+        self.label_21 = QtWidgets.QLabel(self.tab_2)
+        self.label_21.setObjectName("label_21")
+        self.horizontalLayout_4.addWidget(self.label_21)
+        self.function_combo_box = QtWidgets.QComboBox(self.tab_2)
+        self.function_combo_box.setObjectName("function_combo_box")
+        self.function_combo_box.addItem("")
+        self.function_combo_box.addItem("")
+        self.function_combo_box.addItem("")
+        self.function_combo_box.addItem("")
+        self.function_combo_box.setItemText(3, "")
+        self.horizontalLayout_4.addWidget(self.function_combo_box)
         self.solve_data_set_button = QtWidgets.QPushButton(self.tab_2)
         self.solve_data_set_button.setObjectName("solve_data_set_button")
         self.horizontalLayout_4.addWidget(self.solve_data_set_button)
@@ -491,7 +502,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tab_view.setCurrentIndex(0)
+        self.tab_view.setCurrentIndex(2)
         self.stackedWidget.setCurrentIndex(0)
         self.solverComboBox.currentIndexChanged['int'].connect(self.stackedWidget.setCurrentIndex)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -539,6 +550,10 @@ class Ui_MainWindow(object):
         self.number_of_tabu_neighbours_line_edit.setText(_translate("MainWindow", "5"))
         self.label_11.setText(_translate("MainWindow", "# of Tabu"))
         self.number_of_tabu_line_edit.setText(_translate("MainWindow", "4"))
+        self.label_21.setText(_translate("MainWindow", "Function Type"))
+        self.function_combo_box.setItemText(0, _translate("MainWindow", "normal"))
+        self.function_combo_box.setItemText(1, _translate("MainWindow", "cmax"))
+        self.function_combo_box.setItemText(2, _translate("MainWindow", "late_truck"))
         self.solve_data_set_button.setText(_translate("MainWindow", "Solve Data Set"))
         self.stop_data_set_solve_button.setText(_translate("MainWindow", "Stop"))
         self.label_4.setText(_translate("MainWindow", "Coming Truck Sequences"))

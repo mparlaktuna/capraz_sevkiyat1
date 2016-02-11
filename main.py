@@ -47,6 +47,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphicsView.parent = self
         self.showing_result = []
         self.result_times = {}
+        self.function_type = 'normal'
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -345,6 +346,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tabu = Tabu(self.data, int(self.number_of_tabu_line_edit.text()), int(self.number_of_tabu_neighbours_line_edit.text()))
         self.algorithms = {'annealing': self.annealing, 'tabu': self.tabu}
         self.algorithm_name = str(self.solverComboBox.currentText())
+        self.function_type = str(self.function_combo_box.currentText())
         self.algorithm = self.algorithms[self.algorithm_name]
         self.update_truck_numbers()
 
@@ -356,7 +358,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.slow_solution = not self.fast_solve_check_box.isChecked()
 
         if self.slow_solution:
-            self.solution_name = 'data_set_{0}_{1}_{2}'.format(self.data_set_number + 1, self.solverComboBox.currentText(), len(self.results) + 1)
+            self.solution_name = 'data_set_{0}_{1}_{2}_{3}'.format(self.data_set_number + 1, self.solverComboBox.currentText(), self.function_combo_box.currentText(), len(self.results) + 1)
             self.results[self.solution_name] = []
             self.result_names_combo_box.addItem(self.solution_name)
 
@@ -481,25 +483,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def calculate_error(self):
         total_error = 0
-        for truck in self.solver.truck_list.values():
-            if truck.truck_name in self.data.going_truck_name_list:
-                if truck.behaviour_list[truck.current_state] == 'done':
+        if self.function_type == 'normal':
+            for truck in self.solver.truck_list.values():
+                if truck.truck_name in self.data.going_truck_name_list:
+                    if truck.behaviour_list[truck.current_state] == 'done':
 
-                    if truck.finish_time > truck.upper_bound:
-                        error = truck.finish_time - truck.upper_bound
+                        if truck.finish_time > truck.upper_bound:
+                            error = truck.finish_time - truck.upper_bound
 
-                        print('positive error')
-                    elif truck.finish_time < truck.lower_bound:
-                        error = truck.finish_time - truck.lower_bound
-                        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!negative error')
-                        print(error)
-                    else:
+                            print('positive error')
+                        elif truck.finish_time < truck.lower_bound:
+                            error = truck.finish_time - truck.lower_bound
+                            #print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!negative error')
+                            #print(error)
+                        else:
+                            error = 0
+                        if self.slow_solution:
+                            self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+                            self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+                            self.current_result_data.times[truck.truck_name].append(['error', error])
+
+
+                    total_error += abs(error)
+        elif self.function_type == 'cmax':
+            print('cmax')
+            total_error = self.solver.current_time
+            for truck in self.solver.truck_list.values():
+                if truck.truck_name in self.data.going_truck_name_list:
+                    if truck.behaviour_list[truck.current_state] == 'done':
+                        self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
+                        self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
+
+        elif self.function_type == 'late_truck':
+            for truck in self.solver.truck_list.values():
+                if truck.truck_name in self.data.going_truck_name_list:
+                    if truck.behaviour_list[truck.current_state] == 'done':
                         error = 0
-                    if self.slow_solution:
+                        if truck.finish_time > truck.upper_bound:
+                            error = truck.finish_time - truck.upper_bound
+                            total_error += 1
+                            error = 1
                         self.current_result_data.times[truck.truck_name].append(['upper bound', truck.upper_bound])
                         self.current_result_data.times[truck.truck_name].append(['lower bound', truck.lower_bound])
                         self.current_result_data.times[truck.truck_name].append(['error', error])
-                    total_error += abs(error)
+
         return total_error
 
     def stop(self):
